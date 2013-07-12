@@ -1,0 +1,12 @@
+{application, lightcontrol,
+ [
+  {description, "light controll application and server for licht.shack, see http://shackspace.de"},
+  {vsn, "2.0.0-r1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { lightcontrol_app, []}},
+  {env, []}
+ ]}.
