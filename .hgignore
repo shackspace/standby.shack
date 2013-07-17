@@ -1,0 +1,4 @@
+syntax: regexp
+\/\..*\.swp$
+^server\/deps\/
+\/ebin\/

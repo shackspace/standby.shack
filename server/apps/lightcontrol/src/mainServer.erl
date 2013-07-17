@@ -10,7 +10,8 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/0]).
+-export([start_link/0,
+	 getLight/1]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -36,6 +37,23 @@
 start_link() ->
 	io:format(" *** ~p: start link~n~n", [?MODULE]),
 	gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
+
+%%--------------------------------------------------------------------
+%% @doc
+%% get light status
+%%
+%% @spec getLight(ID) -> State | error
+%% @end
+%%--------------------------------------------------------------------
+getLight(ID) ->
+	io:format("get light status ~p~n", [ID]),
+	case ID of
+		all ->
+			[{120,1},{121,0},{122,0}];
+		_ ->
+			[{119,0}]
+	end.
+
 
 %%%===================================================================
 %%% gen_server callbacks
