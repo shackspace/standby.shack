@@ -37,6 +37,7 @@ start(_StartType, _StartArgs) ->
 	Dispatch = cowboy_router:compile([
 		{'_', [
 			{"/1/[...]", restV2handler, []},
+			{"/2/[...]", restV2handler, []},
 			{"/[...]", cowboy_static, [
 				{directory, {priv_dir, static_world, []}},
 				{mimetypes, {fun mimetypes:path_to_mimes/2, default}}
