@@ -2,3 +2,4 @@ syntax: regexp
 \/\..*\.swp$
 ^server\/deps\/
 \/ebin\/
+^server\/Mnesia\.nonode@nohost
