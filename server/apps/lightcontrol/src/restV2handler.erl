@@ -80,7 +80,13 @@ content_types_accepted(Req, State) ->
 %% @end
 %%--------------------------------------------------------------------
 textPlainGet(Req, State) ->
-	Data = getLightPlainText(getLightID(Req)),
+	Data = case convertURL_ID(Req) of
+		error ->
+			<<"can't convert url">>;
+		ID ->
+			{_, Lights} = plainTextHandler:getLight(ID),
+			Lights
+	end,
 	{Data, Req, State}.
 
 
@@ -92,15 +98,14 @@ textPlainGet(Req, State) ->
 %% @end
 %%--------------------------------------------------------------------
 textPlainPut(Req, State) ->
-	{ok, [{NewStateBin,_}], _} = cowboy_req:body_qs(5,Req),
-	if
-		NewStateBin =:= <<"t">> ->
-			toggleLight(getLightID(Req));
-		true ->
-			{NewState, _} = string:to_integer(binary_to_list(NewStateBin)),
-			setLight(getLightID(Req), NewState)
+	{ok, [{NewStateBin,_}], _} = cowboy_req:body_qs(200,Req),
+	Result = case convertURL_ID(Req) of
+		error ->
+			false;
+		ID ->
+			plainTextHandler:setLight(ID, NewStateBin) =:= ok  %in reason on error, return false
 	end,
-	{true, Req, State}.
+	{Result, Req, State}.
 
 
 %%--------------------------------------------------------------------
@@ -111,7 +116,13 @@ textPlainPut(Req, State) ->
 %% @end
 %%--------------------------------------------------------------------
 applicationJsonGet(Req, State) ->
-	Data = getLightJson(getLightID(Req)),
+	Data = case convertURL_ID(Req) of
+		error ->
+			<<"{\"type\":\"error\",\"error\":\"can't convert url\"}">>;
+		ID ->
+			{_, Lights} = jsonHandler:getLight(ID),
+			Lights
+	end,
 	{Data, Req, State}.
 
 
@@ -124,16 +135,13 @@ applicationJsonGet(Req, State) ->
 %%--------------------------------------------------------------------
 applicationJsonPut(Req, State) ->
 	{ok, [{DataBin,_}], _} = cowboy_req:body_qs(200,Req),
-	{ok, {Data}} = json:decode(DataBin),
-	case proplists:get_value(<<"type">>, Data) of
-		<<"switchOn">> ->
-			setLight(getLightID(Req), 1);
-		<<"switchOff">> ->
-			setLight(getLightID(Req), 0);
-		<<"set">> ->
-			setLight(getLightID(Req), proplists:get_value(<<"state">>, Data))
+	Result = case convertURL_ID(Req) of
+		error ->
+			false;
+		ID ->
+			jsonHandler:setLight(ID, DataBin) =:= ok  %in reason on error, return false
 	end,
-	{true, Req, State}.
+	{Result, Req, State}.
 
 
 %%%-------------------------------------------------------------------
@@ -144,10 +152,10 @@ applicationJsonPut(Req, State) ->
 %% @doc
 %% converts url path to light id
 %%
-%% @spec getLightID(Req) -> ID | all | error
+%% @spec convertURL_ID(Req) -> ID | all | error
 %% @end
 %%--------------------------------------------------------------------
-getLightID(Req) ->
+convertURL_ID(Req) ->
 	{Path, _} = cowboy_req:path_info(Req),
 	case Path of
 		[<<"light">>] ->
@@ -158,81 +166,4 @@ getLightID(Req) ->
 		_ ->
 			error
 	end.
-
-
-%%--------------------------------------------------------------------
-%% @doc
-%% set state of light
-%%
-%% @spec setLight(ID, State) -> ok | error
-%% @end
-%%--------------------------------------------------------------------
-setLight(ID, State) ->
-	io:format("set light ~p to ~p~n", [ID, State]),
-	ok.
-
-%%--------------------------------------------------------------------
-%% @doc
-%% toggle light
-%%
-%% @spec toggleLight(ID) -> ok | error
-%% @end
-%%--------------------------------------------------------------------
-toggleLight(ID) ->
-	io:format("toggle light ~p~n", [ID]),
-	ok.
-
-%%--------------------------------------------------------------------
-%% @doc
-%% get light status
-%%
-%% @spec getLight(ID) -> State | error
-%% @end
-%%--------------------------------------------------------------------
-getLight(ID) ->
-	io:format("get light status ~p~n", [ID]),
-	case ID of
-		all ->
-			[{120,1},{121,0},{122,0}];
-		_ ->
-			[{119,0}]
-	end.
-
-%%--------------------------------------------------------------------
-%% @doc
-%% get light state as plain text
-%%
-%% @spec getLightPlainText(ID) -> string()
-%% @end
-%%--------------------------------------------------------------------
-getLightPlainText(ID) ->
-	getLightPlainText(getLight(ID), "").
-
-getLightPlainText([], StatesAsText) ->
-	StatesAsText;
-
-getLightPlainText(States, StatesAsText) ->
-	[{ID, State}|Rest] = States,
-	NewStatesAsText = lists:concat([StatesAsText, ID, " ", State, "\n"]),
-	getLightPlainText(Rest, NewStatesAsText).
-
-
-%%--------------------------------------------------------------------
-%% @doc
-%% get light as json
-%%
-%% @spec getLightJson(ID) -> string()
-%% @end
-%%--------------------------------------------------------------------
-getLightJson(ID) ->
-	{ok, Data} = json:encode({getLightJson(getLight(ID),[{"type", <<"states">>}])}),
-	Data.
-
-getLightJson([], DataPreEncode) ->
-	DataPreEncode;
-
-getLightJson(Data, DataPreEncode) ->
-	[{ID, State}|Rest] = Data,
-	NewDataPreEncode = lists:concat([DataPreEncode,[{integer_to_list(ID), State}]]),
-	getLightJson(Rest, NewDataPreEncode).
 

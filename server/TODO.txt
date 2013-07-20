@@ -1,0 +1,13 @@
+[X] rest api
+[X] udp server
+[X] light mapping
+[X] save light state
+[X] light handling operations
+[X] json operations (functions for REST API, websocket, eventserver, …)
+[X] plain text operations (see json operations)
+[ ] xml operations (see json operations)
+[ ] websocket
+[ ] eventsource
+[ ] client site stuff
+[ ] release
+[X] database

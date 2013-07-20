@@ -51,7 +51,8 @@ start_link() ->
 %%--------------------------------------------------------------------
 init([]) ->
 	Module = ?CHILD(mainServer, mainServer, worker, []),
-	{ok, {{one_for_one, 5, 10}, [Module]}}.
+	UDPServer = ?CHILD(udpServer, udpServer, worker, []),
+	{ok, {{one_for_one, 5, 10}, [Module, UDPServer]}}.
 
 %%%===================================================================
 %%% Internal functions

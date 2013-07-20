@@ -25,9 +25,11 @@ getLight(ID) ->
 			{getLight(mainServer:getLight(ID),[{"type", <<"states">>}])}
 		)
 	of
-		{ok, Data} -> Data
+		Result -> Result
 	catch
-		EType:Error -> {EType,Error}
+		_:_ ->
+			JSON = <<"{\"type\":\"error\",\"error\":\"can't get lights\"}">>,
+			{error, JSON}
 	end.
 
 getLight([], DataPreEncode) ->
@@ -43,10 +45,10 @@ getLight(Data, DataPreEncode) ->
 %% @doc
 %% decode a json binary string and tries to execute commands in there
 %%
-%% @spec setLight(JSON) -> ok | {error, Error}
+%% @spec setLight(ID, JSON) -> ok | {error, Error}
 %% @end
 %%--------------------------------------------------------------------
-setLight(JSON, ID) ->
+setLight(ID, JSON) ->
 	try
 		{ok, {Data}} = json:decode(JSON),
 		case proplists:get_value(<<"type">>, Data) of
@@ -54,11 +56,20 @@ setLight(JSON, ID) ->
 				mainServer:setLight(ID, 1);
 			<<"switchOff">> ->
 				mainServer:setLight(ID, 0);
+			<<"toggle">> ->
+				mainServer:toggleLight(ID);
 			<<"set">> ->
-				mainServer:setLight(ID, proplists:get_value(<<"state">>, Data))
+				case proplists:get_value(<<"state">>, Data) of
+					undefined ->
+						{error, state_undefined};
+					State when is_integer(State) ->
+						mainServer:setLight(ID, State);
+					_ ->
+						{error, unknown_error}
+				end
 		end
 	of
-		_ -> ok
+		Result -> Result
 	catch
 		EType:Error -> {EType,Error}
 	end.

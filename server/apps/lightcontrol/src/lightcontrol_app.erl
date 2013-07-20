@@ -36,14 +36,14 @@
 start(_StartType, _StartArgs) ->
 	Dispatch = cowboy_router:compile([
 		{'_', [
-%			{"/1/[...]", restV2handler, []},
+			{"/1/[...]", restV2handler, []},
 			{"/[...]", cowboy_static, [
 				{directory, {priv_dir, static_world, []}},
 				{mimetypes, {fun mimetypes:path_to_mimes/2, default}}
 			]}
 		]}
 	]),
-	{ok, _} = cowboy:start_http(http, 100, [{port, 8090}], [
+	{ok, _} = cowboy:start_http(http, 100, [{port, 8091}], [
 		{env, [{dispatch, Dispatch}]}
 	]),
 	lightcontrol_sup:start_link().

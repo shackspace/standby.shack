@@ -5,17 +5,14 @@
 %%%
 %%% @end
 %%%-------------------------------------------------------------------
--module(mainServer).
+
+-module(udpServer).
 
 -behaviour(gen_server).
 
 %% API
 -export([start_link/0,
-	 getLight/1,
-	 setLight/2,
-	 toggleLight/1,
-	 updateRealLight/2,
-	 getRealLight/1]).
+	 setLight/2]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -25,8 +22,7 @@
 	 terminate/2,
 	 code_change/3]).
 
--record(state, {}).
-
+-record(state, {udpsocket}).
 %%%===================================================================
 %%% API
 %%%===================================================================
@@ -44,56 +40,15 @@ start_link() ->
 
 %%--------------------------------------------------------------------
 %% @doc
-%% get light status
+%% set the light state based on the RealID, and RealState
 %%
-%% @spec getLight(ID) -> [{ID,State},...] | error
+%% @spec setLight(RealID, ToState) -> ok
 %% @end
 %%--------------------------------------------------------------------
-getLight(ID) ->
-	light:getLight(ID).
+setLight(RealID, ToState) ->
+	?MODULE ! {set, RealID, ToState},
+	ok.
 
-
-%%--------------------------------------------------------------------
-%% @doc
-%% set light
-%%
-%% @spec setLight(ID, State) -> ok | error
-%% @end
-%%--------------------------------------------------------------------
-setLight(ID, State) ->
-	light:setLight(ID, State).
-
-
-%%--------------------------------------------------------------------
-%% @doc
-%% toggle light
-%%
-%% @spec toggleLight(ID) -> ok | error
-%% @end
-%%--------------------------------------------------------------------
-toggleLight(ID) ->
-	light:toggleLight(ID).
-
-
-%%--------------------------------------------------------------------
-%% @doc
-%% get light state based on real id
-%%
-%% @spec getRealLight(RealID) -> State | error
-%% @end
-%%--------------------------------------------------------------------
-getRealLight(RealID) ->
-	light:getRealLight(RealID).
-
-%%--------------------------------------------------------------------
-%% @doc
-%% update light state in database, based on the RealID
-%%
-%% @spec updateRealLight(RealID, State) -> ok | error
-%% @end
-%%--------------------------------------------------------------------
-updateRealLight(RealID, State) ->
-	light:updateRealLight(RealID, State).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -112,7 +67,8 @@ updateRealLight(RealID, State) ->
 %%--------------------------------------------------------------------
 init([]) ->
 	io:format(" *** ~p: init:~n\tOpts='[]'~n~n", [?MODULE]),
-	State = #state{},
+	{ok, UDPSocket} = gen_udp:open(2342, [list, {active,once}, {broadcast,true}, {reuseaddr, true}]),
+	State=#state{udpsocket=UDPSocket},
 	{ok, State}.
 
 %%--------------------------------------------------------------------
@@ -133,6 +89,9 @@ handle_call(_Request, _From, State) ->
 	io:format(" *** ~p: unexpected call:~n\tRequest='~p', From='~p', State='~p'~n~n", [?MODULE, _Request, _From, State]),
 	Reply = ok,
 	{reply, Reply, State}.
+
+
+
 
 %%--------------------------------------------------------------------
 %% @private
@@ -158,6 +117,35 @@ handle_cast(_Msg, State) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
+
+%% @doc
+%% starts a loop, to set light
+%% @end
+handle_info({set, RealID, ToState}, State) ->
+	erlang:spawn_link(fun() -> testComplet(RealID, ToState, 200) end), %try 200 times to set light state
+	{noreply, State};
+
+%% @doc
+%% send Data to 'licht.shack' on port 1337
+%% @end
+handle_info({send, Data}, State) ->
+	gen_udp:send(State#state.udpsocket, 'licht.shack', 1337, Data),
+	{noreply, State};
+
+%% @doc
+%% recive udp package and update light state in database if
+%% sender match 'licht.shack' 
+%% @end
+handle_info({udp, SourceSocket, From, 2342, [LightID, LightState]}, State) ->
+	Socket = State#state.udpsocket,
+	{ok, IP} = inet:getaddr('licht.shack', inet),
+	case {SourceSocket, From} of
+		{Socket, IP} ->
+			mainServer:updateRealLight(LightID, LightState)
+	end,
+	inet:setopts(Socket, [{active, once}]),
+	{noreply, State};
+
 handle_info(_Info, State) ->
 	io:format(" *** ~p: unexpected info:~n\tInfo='~p', State='~p'~n~n", [?MODULE, _Info, State]),
 	{noreply, State}.
@@ -192,3 +180,26 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% send udp again as long state hasn't been set correctly
+%%
+%% @spec testComplet(LightID, LightState) -> Reply
+%% @end
+%%--------------------------------------------------------------------
+testComplet(_RealID, _ToState, 0) ->
+	error;
+
+testComplet(RealID, ToState, Count) ->
+	?MODULE ! {send, [16#A5,16#5A,RealID,ToState]},
+	timer:sleep(100),
+	case mainServer:getRealLight(RealID) of
+		ToState ->
+			%io:format(" *** ~p:~n\tLight ~p is now ~p. ~n~n", [?MODULE, LightID, LightState]),
+			ok;
+		_ ->
+			io:format("~p ",[Count]),
+			testComplet(RealID, ToState, Count-1)
+	end.
