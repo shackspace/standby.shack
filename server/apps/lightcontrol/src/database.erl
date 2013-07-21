@@ -49,21 +49,41 @@ init() ->
 			{attributes, record_info(fields, addressid)},
 			{disc_copies, [node()]}
 			]),
-	ok = init(
-[        100       ,       101        ,       102        ,       103        ,       104        ,       105        ,       106        ,       107        ,       108        ,       109        ,       110        ,       111        ,       112        ,       113        ,       114        ,       115        ,       116        ,       117        ,       118        ,       119        ,       120        ,       121        ,       122        ,       123        ,       124        ,       125        ,       126],
-[         26       ,        27        ,        26        ,        27        ,        28        ,        28        ,        28        ,        28        ,        29        ,        29        ,        29        ,        29        ,        30        ,        30        ,        30        ,        24        ,        24        ,        25        ,        25        ,        20        ,        21        ,        22        ,        23        ,        20        ,        21        ,        22        ,        23],
-[["lounge","16","4"],["lounge","16","3"],["lounge","16","2"],["lounge","16","1"],["lounge","15","4"],["lounge","15","3"],["lounge","15","2"],["lounge","15","1"],["lounge","14","4"],["lounge","14","3"],["lounge","14","2"],["lounge","14","1"],["lounge","19","1"],["lounge","18","1"],["lounge","17","1"],["lounge","13","2"],["lounge","13","1"],["lounge","12","2"],["lounge","12","1"],["lounge","11","4"],["lounge","11","3"],["lounge","10","4"],["lounge","10","3"],["lounge","11","2"],["lounge","11","1"],["lounge","10","2"],["lounge","10","1"]]
-	).
+	ok = init([
+				{100,26,["lounge","16","4"]},
+				{101,27,["lounge","16","3"]},
+				{102,26,["lounge","16","2"]},
+				{103,27,["lounge","16","1"]},
+				{104,28,["lounge","15","4"]},
+				{105,28,["lounge","15","3"]},
+				{106,28,["lounge","15","2"]},
+				{107,28,["lounge","15","1"]},
+				{108,29,["lounge","14","4"]},
+				{109,29,["lounge","14","3"]},
+				{110,29,["lounge","14","2"]},
+				{111,29,["lounge","14","1"]},
+				{112,30,["lounge","19","1"]},
+				{113,30,["lounge","18","1"]},
+				{114,30,["lounge","17","1"]},
+				{115,24,["lounge","13","2"]},
+				{116,24,["lounge","13","1"]},
+				{117,25,["lounge","12","2"]},
+				{118,25,["lounge","12","1"]},
+				{119,20,["lounge","11","4"]},
+				{120,21,["lounge","11","3"]},
+				{121,22,["lounge","10","4"]},
+				{122,23,["lounge","10","3"]},
+				{123,20,["lounge","11","2"]},
+				{124,21,["lounge","11","1"]},
+				{125,22,["lounge","10","2"]},
+				{126,23,["lounge","10","1"]}
+	]).
 
-init([],[],[]) ->
+init([]) ->
 	ok;
-init(IDs, RealIDs, Addresses) ->
-	[ID|RestID]=IDs,
-	[RealID|RestRealIDs]=RealIDs,
-	[Address|RestAddresses]=Addresses,
-	[A1|A23]=Address,
-	[A2|[A3]]=A23,
-	io:format("~p ~p~n",[ID,RealID]),
+init(Mapping) ->
+	[Map|Rest]=Mapping,
+	{ID,RealID,[A1,A2,A3]}=Map,
 	{atomic, ok} = mnesia:transaction(
 		fun() ->
 			mnesia:write(#idmap{id=ID,realid=RealID}),
@@ -71,7 +91,8 @@ init(IDs, RealIDs, Addresses) ->
 			mnesia:write(#possibleState{id=ID,state=[0,1]}),
 			mnesia:write(#addressid{id=ID,a1=A1,a2=A2,a3=A3})
 		end),
-	init(RestID,RestRealIDs,RestAddresses).
+	io:format("~p~n",[Map]),
+	init(Rest).
 
 
 %%--------------------------------------------------------------------
@@ -134,7 +155,9 @@ getID(IN, Out) ->
 		[{idmap,ID,_}|Rest] ->
 			{ID,Rest};
 		[{addressid,ID,_,_,_}|Rest] ->
-			{ID,Rest}
+			{ID,Rest};
+		_ ->
+			error
 	end,
 	NewOut = Out ++ [NID],
 	getID(NRest, NewOut).	
