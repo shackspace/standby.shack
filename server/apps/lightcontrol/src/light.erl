@@ -25,6 +25,11 @@
 %%--------------------------------------------------------------------
 getLight(all) ->
 	getLight(database:getAllID(),[]);
+getLight(Address) when is_list(Address) ->
+	case getLight(database:getID(Address),[]) of
+		[] -> error;
+		States -> States
+	end;
 getLight(ID) ->
 	case database:getState(ID) of
 		error ->
@@ -48,14 +53,13 @@ getLight(IDs, Result) ->
 %% @end
 %%--------------------------------------------------------------------
 setLight(all, State) ->
-	setLight(database:getAllID(), State);
-setLight([], _State) ->
-	ok;
-setLight(Lights, State) when is_list(Lights) ->
-	[ID|Rest] = Lights,
-	case setLight(ID, State) of
-		ok ->
-			setLight(Rest, State);
+	setLightL(database:getAllID(), State);
+setLight(Address, State) when is_list(Address) ->
+	case database:getID(Address) of
+		[] ->
+			error;
+		IDs when is_list(IDs) ->
+			setLightL(IDs, State);
 		_ ->
 			error
 	end;
@@ -70,6 +74,16 @@ setLight(ID, State) ->
 				_ ->
 					error
 			end
+	end.
+setLightL([], _State) ->
+	ok;
+setLightL(Lights, State) ->
+	[ID|Rest] = Lights,
+	case setLight(ID, State) of
+		ok ->
+			setLightL(Rest, State);
+		_ ->
+			error
 	end.
 
 

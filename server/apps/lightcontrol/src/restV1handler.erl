@@ -6,7 +6,7 @@
 %%% @end
 %%%-------------------------------------------------------------------
 
--module(restV2handler).
+-module(restV1handler).
 
 -export([init/3,
 	allowed_methods/2,

@@ -61,6 +61,7 @@ getLight(ID) ->
 %% @end
 %%--------------------------------------------------------------------
 setLight(ID, State) ->
+	io:format("set light ~p to ~p~n", [ID, State]),
 	light:setLight(ID, State).
 
 

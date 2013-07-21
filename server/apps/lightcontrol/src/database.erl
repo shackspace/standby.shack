@@ -19,6 +19,7 @@
 -record(idmap,{id,realid}).
 -record(state,{id,state}).
 -record(possibleState,{id, state=[]}).
+-record(addressid,{id,a1,a2,a3}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -31,6 +32,7 @@ init() ->
 	mnesia:delete_table(idmap),
 	mnesia:delete_table(state),
 	mnesia:delete_table(possibleState),
+	mnesia:delete_table(addressid),
 	{atomic,ok} = mnesia:create_table(idmap, [
 			{attributes, record_info(fields, idmap)},
 			{disc_copies, [node()]}
@@ -42,25 +44,34 @@ init() ->
 	{atomic,ok} = mnesia:create_table(possibleState, [
 			{attributes, record_info(fields, possibleState)},
 			{disc_copies, [node()]}
+		]),
+	{atomic,ok} = mnesia:create_table(addressid, [
+			{attributes, record_info(fields, addressid)},
+			{disc_copies, [node()]}
 			]),
 	ok = init(
-[100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126],
-[ 26, 27, 26, 27, 28, 28, 28, 28, 29, 29, 29, 29, 30, 30, 30, 24, 24, 25, 25, 20, 21, 22, 23, 20, 21, 22, 23]
+[        100       ,       101        ,       102        ,       103        ,       104        ,       105        ,       106        ,       107        ,       108        ,       109        ,       110        ,       111        ,       112        ,       113        ,       114        ,       115        ,       116        ,       117        ,       118        ,       119        ,       120        ,       121        ,       122        ,       123        ,       124        ,       125        ,       126],
+[         26       ,        27        ,        26        ,        27        ,        28        ,        28        ,        28        ,        28        ,        29        ,        29        ,        29        ,        29        ,        30        ,        30        ,        30        ,        24        ,        24        ,        25        ,        25        ,        20        ,        21        ,        22        ,        23        ,        20        ,        21        ,        22        ,        23],
+[["lounge","6","3"],["lounge","6","2"],["lounge","6","1"],["lounge","6","0"],["lounge","5","3"],["lounge","5","2"],["lounge","5","1"],["lounge","5","0"],["lounge","4","3"],["lounge","4","2"],["lounge","4","1"],["lounge","4","0"],["lounge","9","0"],["lounge","8","0"],["lounge","7","0"],["lounge","3","1"],["lounge","3","0"],["lounge","2","1"],["lounge","2","0"],["lounge","1","3"],["lounge","1","2"],["lounge","0","3"],["lounge","0","2"],["lounge","1","1"],["lounge","1","0"],["lounge","0","1"],["lounge","0","0"]]
 	).
 
-init([],[]) ->
+init([],[],[]) ->
 	ok;
-init(IDs, RealIDs) ->
+init(IDs, RealIDs, Addresses) ->
 	[ID|RestID]=IDs,
 	[RealID|RestRealIDs]=RealIDs,
+	[Address|RestAddresses]=Addresses,
+	[A1|A23]=Address,
+	[A2|[A3]]=A23,
 	io:format("~p ~p~n",[ID,RealID]),
 	{atomic, ok} = mnesia:transaction(
 		fun() ->
 			mnesia:write(#idmap{id=ID,realid=RealID}),
 			mnesia:write(#state{id=ID,state=0}),
-			mnesia:write(#possibleState{id=ID,state=[0,1]})
+			mnesia:write(#possibleState{id=ID,state=[0,1]}),
+			mnesia:write(#addressid{id=ID,a1=A1,a2=A2,a3=A3})
 		end),
-	init(RestID,RestRealIDs).
+	init(RestID,RestRealIDs,RestAddresses).
 
 
 %%--------------------------------------------------------------------
@@ -77,7 +88,34 @@ getRealID(ID) ->
 		_ ->
 			error
 	end.
+	
 
+
+%%--------------------------------------------------------------------
+%% @doc
+%% get ID(s)(fake ID(s)) which match Address
+%%
+%% @spec getID(Address) -> [ID,...] | error
+%% @end
+%%--------------------------------------------------------------------
+getID(Address) when is_list(Address)->
+	Match = case Address of
+		[A1] ->
+			{addressid,'_',A1,'_','_'};
+		[A1,A2] ->
+			{addressid,'_',A1,A2,'_'};
+		[A1,A2,A3] ->
+			{addressid,'_',A1,A2,A3};
+		_ ->
+			error
+	end,
+	Data = case Match of
+		error ->
+			error;
+		Match ->
+			mnesia:dirty_match_object(Match)
+	end,
+	getID(Data, []);
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -92,9 +130,15 @@ getID(RealID) ->
 getID([], Out) ->
 	Out;
 getID(IN, Out) ->
-	[{idmap,ID,_}|Rest] = IN,
-	NewOut = Out ++ [ID],
-	getID(Rest, NewOut).	
+	{NID,NRest} = case IN of
+		[{idmap,ID,_}|Rest] ->
+			{ID,Rest};
+		[{addressid,ID,_,_,_}|Rest] ->
+			{ID,Rest}
+	end,
+	NewOut = Out ++ [NID],
+	getID(NRest, NewOut).	
+
 
 %%--------------------------------------------------------------------
 %% @doc

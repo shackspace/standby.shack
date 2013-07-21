@@ -17,6 +17,7 @@
 	applicationJsonPut/2,
 	applicationJsonGet/2]).
 
+-export([convertURL_ID/1,convertURL_ID/2]).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -163,7 +164,12 @@ convertURL_ID(Req) ->
 		[<<"light">>, IDstr] ->
 			{ID, _} = string:to_integer(binary_to_list(IDstr)),
 			ID;
-		_ ->
-			error
+		Path ->
+			convertURL_ID(Path,[])
 	end.
-
+convertURL_ID([],OUT) ->
+	OUT;
+convertURL_ID(IN,OUT) ->
+	[KEY|REST] = IN,
+	NewOUT = OUT ++ [binary_to_list(KEY)],
+	convertURL_ID(REST,NewOUT).
