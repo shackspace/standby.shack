@@ -107,16 +107,6 @@ handle_cast(_Msg, State) ->
 	io:format(" *** ~p: unexpected cast:~n\tMsg='~p', State='~p'~n~n", [?MODULE, _Msg, State]),
 	{noreply, State}.
 
-%%--------------------------------------------------------------------
-%% @private
-%% @doc
-%% Handling all non call/cast messages
-%%
-%% @spec handle_info(Info, State) -> {noreply, State} |
-%%                                   {noreply, State, Timeout} |
-%%                                   {stop, Reason, State}
-%% @end
-%%--------------------------------------------------------------------
 
 %% @doc
 %% starts a loop, to set light
@@ -145,6 +135,13 @@ handle_info({udp, SourceSocket, From, 2342, [LightID, LightState]}, State) ->
 	end,
 	inet:setopts(Socket, [{active, once}]),
 	{noreply, State};
+
+%% @doc
+%% unexpected info
+%% @spec handle_info(Info, State) -> {noreply, State} |
+%%                                   {noreply, State, Timeout} |
+%%                                   {stop, Reason, State}
+%% @end
 
 handle_info(_Info, State) ->
 	io:format(" *** ~p: unexpected info:~n\tInfo='~p', State='~p'~n~n", [?MODULE, _Info, State]),
@@ -186,7 +183,7 @@ code_change(_OldVsn, State, _Extra) ->
 %% @doc
 %% send udp again as long state hasn't been set correctly
 %%
-%% @spec testComplet(LightID, LightState) -> Reply
+%% @spec testComplet(_RealID, _ToState, RetryNumber) -> Reply
 %% @end
 %%--------------------------------------------------------------------
 testComplet(_RealID, _ToState, 0) ->

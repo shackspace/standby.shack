@@ -34,7 +34,7 @@ init(_Transport, _Req, []) ->
 %% @doc
 %% allow GET and PUT requests
 %%
-%% @spec allowed_methods(Req, State) -> {[<<"GET">>, <<"PUT">>], Req, State}
+%% @spec allowed_methods(Req, State) -> {AllowedMethods, Req, State}
 %% @end
 %%--------------------------------------------------------------------
 allowed_methods(Req, State) ->
@@ -45,7 +45,7 @@ allowed_methods(Req, State) ->
 %% @doc
 %% mime type specific handlers, to handle GET requests
 %%
-%% @spec content_types_provided(Req, State) -> {[{{<<"text">>, <<"plain">>, []}, textPlain}], Req, State}
+%% @spec content_types_provided(Req, State) -> {ProvidedContentTypes, Req, State}
 %% @end
 %%--------------------------------------------------------------------
 content_types_provided(Req, State) ->
@@ -59,7 +59,7 @@ content_types_provided(Req, State) ->
 %% @doc
 %% mime type specific handlers for PUT requests
 %% 
-%% @spec content_types_accepted(Req, State) -> {[{{<<"text">>, <<"plain">>, []}, textPlain}], Req, State}
+%% @spec content_types_accepted(Req, State) -> {AcceptedContentTypes, Req, State}
 %% @end
 %%--------------------------------------------------------------------
 content_types_accepted(Req, State) ->

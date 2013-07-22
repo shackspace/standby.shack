@@ -15,7 +15,7 @@
 %% @doc
 %% get light state as plain text
 %%
-%% @spec getLightPlainText(ID) -> {ok, string()}
+%% @spec getLight(ID) -> {ok, Data} | {error, Reason}
 %% @end
 %%--------------------------------------------------------------------
 getLight(ID) ->
