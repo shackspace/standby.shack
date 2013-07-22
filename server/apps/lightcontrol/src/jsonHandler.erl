@@ -34,7 +34,8 @@ getLight(ID) ->
 
 getLight([], DataPreEncode) ->
 	DataPreEncode;
-
+getLight([{ID, State}], [DataPreEncode]) ->
+	[DataPreEncode, {"id", ID}, {"state", State}, {integer_to_list(ID), State}];
 getLight(Data, DataPreEncode) ->
 	[{ID, State}|Rest] = Data,
 	NewDataPreEncode = DataPreEncode ++ [{integer_to_list(ID), State}],
