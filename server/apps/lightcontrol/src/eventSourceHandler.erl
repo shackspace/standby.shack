@@ -15,7 +15,7 @@
 init(_Transport, Req, []) ->
         Headers = [{<<"content-type">>, <<"text/event-stream">>}],
         {ok, Req2} = cowboy_req:chunked_reply(200, Headers, Req),
-        {loop, Req2, undefined, 5000}.
+        {loop, Req2, undefined, hibernate}.
 
 info({event,_Event}, Req, State) ->
 	io:format("Event: ~p~n",[_Event]),
