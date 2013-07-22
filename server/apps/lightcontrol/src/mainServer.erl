@@ -53,6 +53,7 @@ sendEvent(Event) ->
 %% @end
 %%--------------------------------------------------------------------
 addListener(PID) when is_pid(PID) ->
+	io:format("addListener ~p~n", [PID]),
 	?MODULE ! {addListener, PID},
 	ok;
 addListener(_) ->
@@ -241,11 +242,12 @@ emitEvent([], NewListener, _Event) ->
 	NewListener;
 emitEvent(Listeners, NewListener, Event) ->
 	[Listener|Rest] = Listeners,
-	NewNewListener = case is_process_alive(Listener) of
-		true ->
-			Listener ! {event, Event},
-			[Listener|NewListener];
+	NewNewListener = try Listener ! {event, Event} of
 		_ ->
+			[Listener|NewListener]
+	catch
+		_ ->
+			io:format("remove listener ~p~n",[Listener]),
 			NewListener
 	end,
 	emitEvent(Rest, NewNewListener, Event).
