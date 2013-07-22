@@ -41,7 +41,7 @@ start(_StartType, _StartArgs) ->
 			{"/eventsource", eventSourceHandler, []},
 			{"/[...]", cowboy_static, [
 				{directory, {priv_dir, lightcontrol, []}},
-				{file, <<"index.html">>},
+%				{file, <<"index.html">>},
 				{mimetypes, {fun mimetypes:path_to_mimes/2, default}}
 			]}
 		]}
