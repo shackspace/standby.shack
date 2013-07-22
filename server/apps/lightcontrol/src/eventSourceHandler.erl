@@ -14,6 +14,7 @@
 
 init(_Transport, Req, []) ->
         Headers = [{<<"content-type">>, <<"text/event-stream">>}],
+	mainServer:addListener(self()),
         {ok, Req2} = cowboy_req:chunked_reply(200, Headers, Req),
         {loop, Req2, undefined, hibernate}.
 
