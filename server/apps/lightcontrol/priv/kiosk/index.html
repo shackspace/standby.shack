@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Lightcontoll</title>
+		<meta name="description" content="this is the shackspace light controlling software" />
+		<meta name="author" content="Mr. Pi <mrpi@mr-pi.de>" />
+		<link rel="stylesheet" type="text/css" href="./main.css" />
+		<script src="./lights.js" type="text/javascript"></script>
+		<script src="./main.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<header><h1 id="myhead">AnyTouch Kiosk</h1></header>
+		<pre id="light">
+           #------+------+------#------+------+------#------+------+------#       
+           #                    #                                         #       
+           #                    # <span id="l126">========</span>  <span id="l125">========</span>   <span id="l124">========</span>  <span id="l123">========</span> #       
+           #     _   _   _  _   # <span id="l122">========</span>  <span id="l121">========</span>   <span id="l120">========</span>  <span id="l119">========</span> #       
+           # |  |_| | _ |_ |_|  #                                         #       
+           # |_ | | |_| |_ | \. #                                         #       
+           #                    # <span id="l118">========</span>  <span id="l117">========</span>   <span id="l116">========</span>  <span id="l115">========</span> #       
+           #                    #                                         #       
+           #                    #                   ###                   #       
+           ###############......#                   ###                 ##########
+           .                                                                      
+     <span id="l114">========</span>                   <span id="l113">========</span>                    <span id="l112">*</span>                 *   
+           .                                                                      
+############                                                              ########
+#                                                                         #       
+#                                                                         #       
+#                                                                         #       
+#####                                                                     #       
+    #                                                                     #       
+    #        <span id="l111">========</span>  <span id="l110">========</span>   <span id="l107">========</span>  <span id="l106">========</span>   <span id="l103">========</span>  <span id="l102">========</span> #       
+    #        <span id="l109">========</span>  <span id="l108">========</span>   <span id="l105">========</span>  <span id="l104">========</span>   <span id="l101">========</span>  <span id="l100">========</span> #       
+    #                                                                     #       
+    #......#------+------+------#------+------+------#------+------+------#       
+		</pre>
+		<img src="http://shackspace.de/strom-query" id="energie" />
+		<img id="logo" src="./stuttgart_hackerspace__bg_black__all_path.svg" />
+		<div id="getTouch" onclick="mouseClick(event)"></div>
+	</body>
+</html>

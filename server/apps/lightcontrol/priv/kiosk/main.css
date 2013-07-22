@@ -1,0 +1,48 @@
+body {
+	background: black;
+	color: #00ff00;
+}
+header {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 50%;
+	margin: 0px;
+	border-bottom: thin double #33ff33;
+	text-align: center;
+}
+#logo {
+	position: fixed;
+	bottom: 0.25cm;
+	left: 0.5cm;
+	height: 3.8cm;
+}
+#energie {
+	position: fixed;
+	bottom: 5cm;
+	right:: 50%;
+	height: 8cm;
+	width: 50%;
+	overflow: hidden;
+}
+#light {
+	-webkit-transform: rotate(270deg);
+	transform: rotate(270deg);
+	position: fixed;
+	right: -3cm;
+	top: 3.5cm;
+	zoom: 0.9;
+	color: #fff;
+	font-weight: bold;
+	font-variant: normal;
+	font-family: monospace;
+	font-style: normal;
+}
+#getTouch {
+	position: fixed;
+	top: 0px;
+	bottom: 0px;
+	right: 0px;
+	left: 0px;
+	z-index: 9999;
+}
