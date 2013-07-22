@@ -17,7 +17,8 @@
 	 updateRealLight/2,
 	 getRealLight/1,
 	 addListener/1,
-	 sendEvent/1]).
+	 sendEvent/1,
+	 getListener/0]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -33,6 +34,16 @@
 %%% API
 %%%===================================================================
 
+
+%%--------------------------------------------------------------------
+%% @doc
+%% returns all listeners
+%%
+%% @spec getListener() -> Listeners
+%% @end
+%%--------------------------------------------------------------------
+getListener() ->
+	gen_server:call(mainServer,{getListener}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -158,6 +169,8 @@ init([]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
+handle_call({getListener}, _From, State) ->
+	{reply, State#state.listener, State};
 handle_call(_Request, _From, State) ->
 	io:format(" *** ~p: unexpected call:~n\tRequest='~p', From='~p', State='~p'~n~n", [?MODULE, _Request, _From, State]),
 	Reply = ok,
