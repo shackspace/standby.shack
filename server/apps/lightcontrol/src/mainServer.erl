@@ -15,7 +15,9 @@
 	 setLight/2,
 	 toggleLight/1,
 	 updateRealLight/2,
-	 getRealLight/1]).
+	 getRealLight/1,
+	 addListener/1,
+	 sendEvent/1]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -25,11 +27,36 @@
 	 terminate/2,
 	 code_change/3]).
 
--record(state, {}).
+-record(state, {listener=[]}).
 
 %%%===================================================================
 %%% API
 %%%===================================================================
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% send an event to all regestrated listeners
+%%
+%% @spec sendEvent(Event) -> ok | error
+%% @end
+%%--------------------------------------------------------------------
+sendEvent(Event) ->
+	?MODULE ! {event, Event},
+	ok.
+
+%%--------------------------------------------------------------------
+%% @doc
+%% add an event listener
+%%
+%% @spec addListener(PID) -> ok | error
+%% @end
+%%--------------------------------------------------------------------
+addListener(PID) when is_pid(PID) ->
+	?MODULE ! {addListener, PID},
+	ok;
+addListener(_) ->
+	error.
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -159,6 +186,14 @@ handle_cast(_Msg, State) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
+handle_info({event, Event}, State) ->
+	NewListener = emitEvent(State#state.listener, [], Event),
+	NewState = State#state{listener=NewListener},
+	{noreply, NewState};
+handle_info({addListener, PID}, State) ->
+	Listener=State#state.listener,
+	NewState=State#state{listener=[PID|Listener]},
+	{noreply, NewState};
 handle_info(_Info, State) ->
 	io:format(" *** ~p: unexpected info:~n\tInfo='~p', State='~p'~n~n", [?MODULE, _Info, State]),
 	{noreply, State}.
@@ -193,3 +228,24 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% send event to listeners
+%%
+%% @spec emitEvent(Listener,NewListener,Event) -> NewListener | error
+%% @end
+%%--------------------------------------------------------------------
+emitEvent([], NewListener, _Event) ->
+	NewListener;
+emitEvent(Listeners, NewListener, Event) ->
+	[Listener|Rest] = Listeners,
+	NewNewListener = case is_process_alive(Listener) of
+		true ->
+			Listener ! {event, Event},
+			[Listener|NewListener];
+		_ ->
+			NewListener
+	end,
+	emitEvent(Rest, NewNewListener, Event).

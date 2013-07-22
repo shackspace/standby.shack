@@ -181,7 +181,8 @@ updateLight(ID, State) ->
 		AllowStates ->
 			case lists:member(State, AllowStates) of
 				true ->
-					database:updateState(ID, State);
+					database:updateState(ID, State),
+					mainServer:sendEvent({updateLight,ID,State});
 				_ ->
 					error
 			end
