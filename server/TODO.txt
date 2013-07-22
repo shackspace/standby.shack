@@ -5,9 +5,10 @@
 [X] light handling operations
 [X] json operations (functions for REST API, websocket, eventserver, …)
 [X] plain text operations (see json operations)
+[X] event management
 [ ] xml operations (see json operations)
 [ ] websocket
-[ ] eventsource
+[X] eventsource
 [ ] client site stuff
 [ ] release
 [X] database
