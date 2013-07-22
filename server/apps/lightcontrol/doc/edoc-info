@@ -1,0 +1,6 @@
+%% encoding: UTF-8
+{application,lightcontrol}.
+{packages,[]}.
+{modules,[database,eventSourceHandler,jsonHandler,light,lightcontrol_app,
+          lightcontrol_sup,mainServer,plainTextHandler,restV1handler,
+          restV2handler,udpServer]}.
