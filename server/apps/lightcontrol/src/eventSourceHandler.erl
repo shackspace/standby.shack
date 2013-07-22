@@ -15,7 +15,6 @@
 init(_Transport, Req, []) ->
         Headers = [{<<"content-type">>, <<"text/event-stream">>}],
         {ok, Req2} = cowboy_req:chunked_reply(200, Headers, Req),
-        erlang:send_after(1000, self(), {message, "Tick"}),
         {loop, Req2, undefined, 5000}.
 
 info({event,_Event}, Req, State) ->
