@@ -96,13 +96,12 @@ setLightL(Lights, State) ->
 %%--------------------------------------------------------------------
 toggleLight(all) ->
 	toggleLight(database:getAllID());
-toggleLight([]) ->
-	ok;
-toggleLight(Lights) when is_list(Lights) ->
-	[ID|Rest] = Lights,
-	case toggleLight(ID) of
-		ok ->
-			toggleLight(Rest);
+toggleLight(Address) when is_list(Address) ->
+	case database:getID(Address) of
+		[] ->
+			error;
+		IDs when is_list(IDs) ->
+			toggleLightL(IDs);
 		_ ->
 			error
 	end;
@@ -114,6 +113,16 @@ toggleLight(ID) ->
 			setLight(ID, 0);
 		[{ID,0}] ->
 			setLight(ID, 1);
+		_ ->
+			error
+	end.
+toggleLightL([]) ->
+	ok;
+toggleLightL(Lights) ->
+	[ID|Rest] = Lights,
+	case toggleLight(ID) of
+		ok ->
+			toggleLightL(Rest);
 		_ ->
 			error
 	end.
