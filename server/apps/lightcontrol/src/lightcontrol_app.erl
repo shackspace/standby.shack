@@ -38,8 +38,10 @@ start(_StartType, _StartArgs) ->
 		{'_', [
 			{"/1/[...]", restV2handler, []},
 			{"/2/[...]", restV2handler, []},
+			{"/eventsource", eventSourceHandler, []},
 			{"/[...]", cowboy_static, [
-				{directory, {priv_dir, static_world, []}},
+				{directory, {priv_dir, lightcontrol, []}},
+				{file, <<"index.html">>},
 				{mimetypes, {fun mimetypes:path_to_mimes/2, default}}
 			]}
 		]}
