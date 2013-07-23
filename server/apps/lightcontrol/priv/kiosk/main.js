@@ -56,6 +56,16 @@ function updateLight(id, state) {
 		document.getElementById('l'+id).style.color='#00ff00';
 }
 
+function clearSelection() {
+	if ( document.selection ) {
+		document.selection.empty();
+	} else if ( window.getSelection ) {
+		window.getSelection().removeAllRanges();
+	} else {
+		alert('error');
+	}
+}
+
 function setupEventSource() {
 	var source = new EventSource('/eventsource');
 
@@ -82,6 +92,7 @@ window.onload = function() {
 	self.setInterval(function() {
 		var cd = new Date();
 		document.getElementById('myhead').innerHTML=cd.getHours()+':'+cd.getMinutes()+':'+cd.getSeconds();
+		clearSelection();
 	}, 1000);
 	
 	if (!!window.EventSource) {
