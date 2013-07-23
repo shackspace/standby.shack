@@ -20,10 +20,11 @@ header {
 #energie {
 	position: fixed;
 	bottom: 5cm;
-	right:: 50%;
+	right: 50%;
 	height: 8cm;
 	width: 50%;
 	overflow: hidden;
+	background: #521;
 }
 #light {
 	-webkit-transform: rotate(270deg);
