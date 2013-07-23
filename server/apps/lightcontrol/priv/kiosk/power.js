@@ -55,15 +55,15 @@ function chartinit() {
 		time.setTime(time.getTime()+1000);
 		dataP1.push({
 			x: time.getTime(),
-			y: i
+			y: 1000
 		});
 		dataP2.push({
 			x: time.getTime(),
-			y: i
+			y: 1000
 		});
 		dataP3.push({
 			x: time.getTime(),
-			y: i
+			y: 1000
 		});
 	};
 
