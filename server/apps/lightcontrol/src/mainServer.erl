@@ -19,7 +19,8 @@
 	 addListener/1,
 	 removeListener/1,
 	 sendEvent/1,
-	 getListener/0]).
+	 getListener/0,
+	 logPower/4]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -35,7 +36,6 @@
 %%% API
 %%%===================================================================
 
-
 %%--------------------------------------------------------------------
 %% @doc
 %% returns all listeners
@@ -45,7 +45,6 @@
 %%--------------------------------------------------------------------
 getListener() ->
 	gen_server:call(mainServer,{getListener}).
-
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -103,7 +102,6 @@ start_link() ->
 getLight(ID) ->
 	light:getLight(ID).
 
-
 %%--------------------------------------------------------------------
 %% @doc
 %% set light
@@ -115,7 +113,6 @@ setLight(ID, State) ->
 	io:format("set light ~p to ~p~n", [ID, State]),
 	light:setLight(ID, State).
 
-
 %%--------------------------------------------------------------------
 %% @doc
 %% toggle light
@@ -125,7 +122,6 @@ setLight(ID, State) ->
 %%--------------------------------------------------------------------
 toggleLight(ID) ->
 	light:toggleLight(ID).
-
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -147,6 +143,17 @@ getRealLight(RealID) ->
 updateRealLight(RealID, State) ->
 	light:updateRealLight(RealID, State).
 
+
+%%--------------------------------------------------------------------
+%% @doc
+%% log power state
+%%
+%% @spec logPower(Time,P1,P2,P3) -> ok | error
+%% @end
+%%--------------------------------------------------------------------
+logPower(Time,P1,P2,P3) ->
+	database:logPower(Time,P1,P2,P3).
+	
 %%%===================================================================
 %%% gen_server callbacks
 %%%===================================================================

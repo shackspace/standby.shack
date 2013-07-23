@@ -161,5 +161,6 @@ handle(_BinData) ->
 	P2 = list_to_integer(binary:bin_to_list(lists:nth(14,Data),{16,5})),
 	P3 = list_to_integer(binary:bin_to_list(lists:nth(15,Data),{16,5})),
 	mainServer:sendEvent({powerEvent,[{time,Time},{p1,P1},{p2,P2},{p3,P3}]}),
+	mainServer:logPower(Time,P1,P2,P3),
 	ok.
 

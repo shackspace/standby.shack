@@ -14,12 +14,14 @@
 	 updateState/2,
 	 getState/1,
 	 getPossibleState/1,
-	 getAllID/0]).
+	 getAllID/0,
+	 logPower/4]).
 
 -record(idmap,{id,realid}).
 -record(state,{id,state}).
 -record(possibleState,{id, state=[]}).
 -record(addressid,{id,a1,a2,a3}).
+-record(powerlog,{time,p1,p2,p3}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -33,6 +35,7 @@ init() ->
 	mnesia:delete_table(state),
 	mnesia:delete_table(possibleState),
 	mnesia:delete_table(addressid),
+	mnesia:delete_table(powerlog),
 	{atomic,ok} = mnesia:create_table(idmap, [
 			{attributes, record_info(fields, idmap)},
 			{disc_copies, [node()]}
@@ -47,6 +50,10 @@ init() ->
 		]),
 	{atomic,ok} = mnesia:create_table(addressid, [
 			{attributes, record_info(fields, addressid)},
+			{disc_copies, [node()]}
+			]),
+	{atomic,ok} = mnesia:create_table(powerlog, [
+			{attributes, record_info(fields, powerlog)},
 			{disc_copies, [node()]}
 			]),
 	ok = init([
@@ -110,8 +117,6 @@ getRealID(ID) ->
 			error
 	end.
 	
-
-
 %%--------------------------------------------------------------------
 %% @doc
 %% get ID(s)(fake ID(s)) which match Address
@@ -162,7 +167,6 @@ getID(IN, Out) ->
 	NewOut = Out ++ [NID],
 	getID(NRest, NewOut).	
 
-
 %%--------------------------------------------------------------------
 %% @doc
 %% update the state of light ID(fake ID) in database
@@ -197,7 +201,6 @@ getState(ID) ->
 			error
 	end.
 
-
 %%--------------------------------------------------------------------
 %% @doc
 %% get possible states for ID
@@ -213,7 +216,6 @@ getPossibleState(ID) ->
 			error
 	end.
 
-
 %%--------------------------------------------------------------------
 %% @doc
 %% get all light ids
@@ -223,4 +225,24 @@ getPossibleState(ID) ->
 %%--------------------------------------------------------------------
 getAllID() ->
 	mnesia:dirty_all_keys(idmap).
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% log power state
+%%
+%% @spec logPower(Time,P1,P2,P3) -> ok | error
+%% @end
+%%--------------------------------------------------------------------
+logPower(Time,P1,P2,P3) ->
+	case mnesia:transaction(
+		fun() ->
+			mnesia:write(#powerlog{time=Time,p1=P1,p2=P2,p3=P3})
+		end)
+	of
+		{atomic, ok} ->
+			ok;
+		_ ->
+			error
+	end.
 
