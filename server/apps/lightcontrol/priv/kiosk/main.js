@@ -61,7 +61,8 @@ function setupEventSource() {
 
 	source.addEventListener('message', function(event) {
 		var obj = JSON.parse(event.data);
-		updateLight(obj.id,obj.state);
+		if(obj.type = "states")
+			updateLight(obj.id,obj.state);
 		}, false);
 }
 
