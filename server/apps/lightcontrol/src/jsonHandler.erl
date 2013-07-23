@@ -85,7 +85,7 @@ setLight(ID, JSON) ->
 %% @end
 %%--------------------------------------------------------------------
 encodePower({powerEvent,Data}) ->
-	PreEncode = [{"type","power"}] ++ Data,
+	PreEncode = [{"type",<<"power">>}] ++ Data,
 	try
 		json:encode({PreEncode})
 	of
