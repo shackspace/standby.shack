@@ -23,7 +23,7 @@
 getLight(ID) ->
 	try
 		json:encode(
-			{getLight(mainServer:getLight(ID),[{"type", <<"states">>}])}
+			{getLight(mainServer:getLight(ID),[{"type", <<"states">>}],0)}
 		)
 	of
 		Result -> Result
@@ -33,14 +33,18 @@ getLight(ID) ->
 			{error, JSON}
 	end.
 
-getLight([], DataPreEncode) ->
-	DataPreEncode;
-getLight([{ID, State}], [DataPreEncode]) ->
+getLight([], DataPreEncode, IsON) ->
+	DataPreEncode ++ [{"state", IsON}];
+getLight([{ID, State}], [DataPreEncode], 0) ->
 	[DataPreEncode, {"id", ID}, {"state", State}, {integer_to_list(ID), State}];
-getLight(Data, DataPreEncode) ->
+getLight(Data, DataPreEncode, IsON) ->
 	[{ID, State}|Rest] = Data,
+	NewIsOn = case State of
+		1 -> 1;
+		_ -> IsON
+	end,
 	NewDataPreEncode = DataPreEncode ++ [{integer_to_list(ID), State}],
-	getLight(Rest, NewDataPreEncode).
+	getLight(Rest, NewDataPreEncode, NewIsOn).
 	
 
 %%--------------------------------------------------------------------
