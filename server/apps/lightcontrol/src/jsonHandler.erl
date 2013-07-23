@@ -9,7 +9,8 @@
 -module(jsonHandler).
 
 -export([getLight/1,
-	 setLight/2]).
+	 setLight/2,
+	 encodePower/1]).
 
 
 %%--------------------------------------------------------------------
@@ -74,4 +75,27 @@ setLight(ID, JSON) ->
 	catch
 		EType:Error -> {EType,Error}
 	end.
-	
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% encode power events
+%%
+%% @spec encodePower(Event) -> {ok,json()} | {error, json()}
+%% @end
+%%--------------------------------------------------------------------
+encodePower({powerEvent,Data}) ->
+	PreEncode = [{"type","power"}] ++ Data,
+	try
+		json:encode({PreEncode})
+	of
+		Result -> Result
+	catch
+		_:_ ->
+			JSON = <<"{\"type\":\"error\",\"error\":\"can't parse power event\"}">>,
+			{error, JSON}
+	end;
+encodePower(_) ->
+	JSON = <<"{\"type\":\"error\",\"error\":\"can't parse power event\"}">>,
+	{error, JSON}.
+

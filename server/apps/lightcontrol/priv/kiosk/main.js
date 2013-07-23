@@ -66,20 +66,19 @@ function setupEventSource() {
 }
 
 window.onload = function() {
-	self.setInterval(function() {
-		for(var i=100; i<=126; i++) {
-			var res = httpGet('/2/light/'+i);
-			var obj = JSON.parse(res);
-			if(obj.state=="0")
-				document.getElementById('l'+i).style.color='#f00';
-			else
-				document.getElementById('l'+i).style.color='#0f0';
-		}
-	}, 100);
+	for(var i=100; i<=126; i++) {
+		var res = httpGet('/2/light/'+i);
+		var obj = JSON.parse(res);
+		if(obj.state=="0")
+			document.getElementById('l'+i).style.color='#f00';
+		else
+			document.getElementById('l'+i).style.color='#0f0';
+	}
 	self.setInterval(function() {
 		var cd = new Date();
 		document.getElementById('myhead').innerHTML=cd.getHours()+':'+cd.getMinutes()+':'+cd.getSeconds();
 	}, 1000);
+	
 	if (!!window.EventSource) {
 		setupEventSource();
 	} else {

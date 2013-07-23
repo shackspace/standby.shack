@@ -5,21 +5,12 @@
 %%%
 %%% @end
 %%%-------------------------------------------------------------------
--module(mainServer).
+-module(rawpower).
 
 -behaviour(gen_server).
 
 %% API
--export([start_link/0,
-	 getLight/1,
-	 setLight/2,
-	 toggleLight/1,
-	 updateRealLight/2,
-	 getRealLight/1,
-	 addListener/1,
-	 removeListener/1,
-	 sendEvent/1,
-	 getListener/0]).
+-export([start_link/0]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -29,58 +20,11 @@
 	 terminate/2,
 	 code_change/3]).
 
--record(state, {listener=[]}).
+-record(state, {}).
 
 %%%===================================================================
 %%% API
 %%%===================================================================
-
-
-%%--------------------------------------------------------------------
-%% @doc
-%% returns all listeners
-%%
-%% @spec getListener() -> Listeners
-%% @end
-%%--------------------------------------------------------------------
-getListener() ->
-	gen_server:call(mainServer,{getListener}).
-
-
-%%--------------------------------------------------------------------
-%% @doc
-%% removes an listener
-%%
-%% @spec removeListener(PID) -> ok | error
-%% @end
-%%--------------------------------------------------------------------
-removeListener(PID) ->
-	?MODULE ! {removeListener, PID}.
-
-%%--------------------------------------------------------------------
-%% @doc
-%% send an event to all regestrated listeners
-%%
-%% @spec sendEvent(Event) -> ok | error
-%% @end
-%%--------------------------------------------------------------------
-sendEvent(Event) ->
-	?MODULE ! {event, Event},
-	ok.
-
-%%--------------------------------------------------------------------
-%% @doc
-%% add an event listener
-%%
-%% @spec addListener(PID) -> ok | error
-%% @end
-%%--------------------------------------------------------------------
-addListener(PID) when is_pid(PID) ->
-	io:format("addListener ~p~n", [PID]),
-	?MODULE ! {addListener, PID},
-	ok;
-addListener(_) ->
-	error.
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -92,60 +36,6 @@ addListener(_) ->
 start_link() ->
 	io:format(" *** ~p: start link~n~n", [?MODULE]),
 	gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
-
-%%--------------------------------------------------------------------
-%% @doc
-%% get light status
-%%
-%% @spec getLight(ID) -> [{ID,State},...] | error
-%% @end
-%%--------------------------------------------------------------------
-getLight(ID) ->
-	light:getLight(ID).
-
-
-%%--------------------------------------------------------------------
-%% @doc
-%% set light
-%%
-%% @spec setLight(ID, State) -> ok | error
-%% @end
-%%--------------------------------------------------------------------
-setLight(ID, State) ->
-	io:format("set light ~p to ~p~n", [ID, State]),
-	light:setLight(ID, State).
-
-
-%%--------------------------------------------------------------------
-%% @doc
-%% toggle light
-%%
-%% @spec toggleLight(ID) -> ok | error
-%% @end
-%%--------------------------------------------------------------------
-toggleLight(ID) ->
-	light:toggleLight(ID).
-
-
-%%--------------------------------------------------------------------
-%% @doc
-%% get light state based on real id
-%%
-%% @spec getRealLight(RealID) -> State | error
-%% @end
-%%--------------------------------------------------------------------
-getRealLight(RealID) ->
-	light:getRealLight(RealID).
-
-%%--------------------------------------------------------------------
-%% @doc
-%% update light state in database, based on the RealID
-%%
-%% @spec updateRealLight(RealID, State) -> ok | error
-%% @end
-%%--------------------------------------------------------------------
-updateRealLight(RealID, State) ->
-	light:updateRealLight(RealID, State).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -165,6 +55,7 @@ updateRealLight(RealID, State) ->
 init([]) ->
 	io:format(" *** ~p: init:~n\tOpts='[]'~n~n", [?MODULE]),
 	State = #state{},
+	erlang:send_after(1000, self(), {pullPower}),
 	{ok, State}.
 
 %%--------------------------------------------------------------------
@@ -181,8 +72,6 @@ init([]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call({getListener}, _From, State) ->
-	{reply, State#state.listener, State};
 handle_call(_Request, _From, State) ->
 	io:format(" *** ~p: unexpected call:~n\tRequest='~p', From='~p', State='~p'~n~n", [?MODULE, _Request, _From, State]),
 	Reply = ok,
@@ -212,25 +101,15 @@ handle_cast(_Msg, State) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_info({event, Event}, State) ->
-	NewListener = emitEvent(State#state.listener, [], Event),
-	NewState = State#state{listener=NewListener},
-	{noreply, NewState};
-handle_info({removeListener, PID}, State) ->
-	NewListener = try State#state.listener -- [PID] of
-		OK ->
-			io:format("remove listener ~p~n",[PID]),
-			OK
-	catch
-		_ ->
-			State#state.listener
-	end,
-	NewState = State#state{listener=NewListener},
-	{noreply, NewState};
-handle_info({addListener, PID}, State) ->
-	Listener=State#state.listener,
-	NewState=State#state{listener=[PID|Listener]},
-	{noreply, NewState};
+handle_info({pullPower}, State) ->
+	{ok, _} = gen_tcp:connect("powerraw.shack", 11111, [binary, {active, true}]),
+	erlang:send_after(2000, self(), {pullPower}),
+	{noreply, State};
+handle_info({tcp,_Socket,_BinData}, State) ->
+	handle(_BinData),
+	{noreply, State};
+handle_info({tcp_closed,_}, State) ->
+	{noreply, State};
 handle_info(_Info, State) ->
 	io:format(" *** ~p: unexpected info:~n\tInfo='~p', State='~p'~n~n", [?MODULE, _Info, State]),
 	{noreply, State}.
@@ -242,6 +121,7 @@ handle_info(_Info, State) ->
 %% terminate. It should be the opposite of Module:init/1 and do any
 %% necessary cleaning up. When it returns, the gen_server terminates
 %% with Reason. The return value is ignored.
+%%
 %%
 %% @spec terminate(Reason, State) -> void()
 %% @end
@@ -269,21 +149,17 @@ code_change(_OldVsn, State, _Extra) ->
 
 %%--------------------------------------------------------------------
 %% @doc
-%% send event to listeners
+%% convers Binary and sends power events
 %%
-%% @spec emitEvent(Listener,NewListener,Event) -> NewListener | error
+%% @spec handle(BinData) -> ok | error
 %% @end
 %%--------------------------------------------------------------------
-emitEvent([], NewListener, _Event) ->
-	NewListener;
-emitEvent(Listeners, NewListener, Event) ->
-	[Listener|Rest] = Listeners,
-	NewNewListener = try Listener ! {event, Event} of
-		_ ->
-			[Listener|NewListener]
-	catch
-		_ ->
-			io:format("drop listener ~p~n",[Listener]),
-			NewListener
-	end,
-	emitEvent(Rest, NewNewListener, Event).
+handle(_BinData) ->
+	Data = binary:split(_BinData, [<<"\r\n">>], [global,trim]),
+	Time = list_to_integer(binary:bin_to_list(lists:nth(1,Data),{20,10})),
+	P1 = list_to_integer(binary:bin_to_list(lists:nth(13,Data),{16,5})),
+	P2 = list_to_integer(binary:bin_to_list(lists:nth(14,Data),{16,5})),
+	P3 = list_to_integer(binary:bin_to_list(lists:nth(15,Data),{16,5})),
+	mainServer:sendEvent({powerEvent,[{time,Time},{p1,P1},{p2,P2},{p3,P3}]}),
+	ok.
+
