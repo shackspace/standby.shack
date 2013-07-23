@@ -49,6 +49,7 @@ function chartinit() {
 	});
 
 	var time = new Date();
+	time.setTime(time.getTime()-1000*300);
 
 	for (var i = 0; i < 300; i++) {
 		time.setTime(time.getTime()+1000);
@@ -91,9 +92,9 @@ function updateChart(p1,p2,p3) {
 	});
 	dataP3.shift();
 
-	energieChart.options.data[0].legendText = " P1: " + -1 + "W";
-	energieChart.options.data[1].legendText = " P2: " + -1 + "W";
-	energieChart.options.data[2].legendText = " P3: " + -1 + "W";
+	energieChart.options.data[0].legendText = " P1: " + p1 + "W";
+	energieChart.options.data[1].legendText = " P2: " + p2 + "W";
+	energieChart.options.data[2].legendText = " P3: " + p3 + "W";
 
 	energieChart.render();
 }
