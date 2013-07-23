@@ -17,18 +17,21 @@ function chartinit() {
 			fontFamily: "calibri"
 		},
 		legend: {
+			horizontalAlign: "left",
 			fontSize: 14,
 			fontWeight: "bold",
 			fontFamily: "calibri",
-			fontColor: "dimGrey"
+			fontColor: "dimGrey",
+			valueFormatString: "##0 000"
 		},
 		axisY2:{
 			suffix: 'W',
-			includeZero: false
+			includeZero: false,
+			valueFormatString: "##0 000"
 		},
 		axisX:{      
 			valueFormatString: "HH:mm:ss" ,
-			labelAngle: -50
+			labelAngle: 30
 		},
 		data: [
 			{ 
