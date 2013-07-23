@@ -25,6 +25,7 @@ header {
 	width: 50%;
 	overflow: hidden;
 	background: #521;
+	z-index: 7000;
 }
 #light {
 	-webkit-transform: rotate(270deg);
@@ -45,5 +46,5 @@ header {
 	bottom: 0px;
 	right: 0px;
 	left: 0px;
-	z-index: 9999;
+	z-index: 5000;
 }

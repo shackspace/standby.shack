@@ -5,47 +5,55 @@ dataP3 = [];
 function chartinit() {
 	energieChart = new CanvasJS.Chart("energie",{
 		zoomEnabled: true,
-		title: {
-			text: "energie usage"		
-		},
+		panEnabled: true,
 		toolTip: {
-			shared: false,
+			shared: true,
+		},
+		title: {
+			text: "energie usage:",
+			horizontalAlign: "left",
+			fontSize: 14,
+			fontWeight: "bold",
+			fontFamily: "calibri"
 		},
 		legend: {
-			verticalAlign: "top",
-			horizontalAlign: "center",
 			fontSize: 14,
 			fontWeight: "bold",
 			fontFamily: "calibri",
 			fontColor: "dimGrey"
 		},
-		axisX: {
-		},
-		axisY:{
+		axisY2:{
 			suffix: 'W',
 			includeZero: false
-		}, 
-		data: [{ 
-			type: "line",
-			xValueType: "dateTime",
-			showInLegend: true,
-			name: "P1",
-			dataPoints: dataP1
 		},
-		{				
-			type: "line",
-			xValueType: "dateTime",
-			showInLegend: true,
-			name: "P2" ,
-			dataPoints: dataP2
+		axisX:{      
+			valueFormatString: "HH:mm:ss" ,
+			labelAngle: -50
 		},
-		{				
-			type: "line",
-			xValueType: "dateTime",
-			showInLegend: true,
-			name: "P3" ,
-			dataPoints: dataP3
-		}]
+		data: [
+			{ 
+				type: "line",
+				axisYType: "secondary",
+				xValueType: "dateTime",
+				showInLegend: true,
+				name: "P1",
+				dataPoints: dataP1
+			}, {				
+				type: "line",
+				axisYType: "secondary",
+				xValueType: "dateTime",
+				showInLegend: true,
+				name: "P2" ,
+				dataPoints: dataP2
+			}, {				
+				type: "line",
+				axisYType: "secondary",
+				xValueType: "dateTime",
+				showInLegend: true,
+				name: "P3" ,
+				dataPoints: dataP3
+			}
+		]
 	});
 
 	var time = new Date();
@@ -67,9 +75,9 @@ function chartinit() {
 		});
 	};
 
-	energieChart.options.data[0].legendText = " P1: " + -1 + "W";
-	energieChart.options.data[1].legendText = " P2: " + -1 + "W";
-	energieChart.options.data[2].legendText = " P3: " + -1 + "W";
+	energieChart.options.data[0].legendText = " P1: " + -1 + "W ";
+	energieChart.options.data[1].legendText = " P2: " + -1 + "W ";
+	energieChart.options.data[2].legendText = " P3: " + -1 + "W ";
 
 	energieChart.render();
 }
@@ -92,9 +100,9 @@ function updateChart(p1,p2,p3) {
 	});
 	dataP3.shift();
 
-	energieChart.options.data[0].legendText = " P1: " + p1 + "W";
-	energieChart.options.data[1].legendText = " P2: " + p2 + "W";
-	energieChart.options.data[2].legendText = " P3: " + p3 + "W";
+	energieChart.options.data[0].legendText = " P1: " + p1 + "W ";
+	energieChart.options.data[1].legendText = " P2: " + p2 + "W ";
+	energieChart.options.data[2].legendText = " P3: " + p3 + "W ";
 
 	energieChart.render();
 }
