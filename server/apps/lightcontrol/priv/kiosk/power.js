@@ -30,8 +30,7 @@ function chartinit() {
 			valueFormatString: "##0 000"
 		},
 		axisX:{      
-			valueFormatString: "HH:mm:ss" ,
-			labelAngle: 30
+			valueFormatString: "HH:mm:ss"
 		},
 		data: [
 			{ 

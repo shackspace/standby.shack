@@ -20,7 +20,7 @@ header {
 #energie {
 	position: fixed;
 	bottom: 5cm;
-	right: 50%;
+	left: 0.5cm;
 	height: 8cm;
 	width: 50%;
 	overflow: hidden;
