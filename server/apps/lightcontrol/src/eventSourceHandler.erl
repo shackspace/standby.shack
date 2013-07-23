@@ -21,11 +21,11 @@ init(_Transport, Req, []) ->
 info({event,{updateLight,LightID,_LightState}}, Req, ID) ->
 	{_,Msg} = jsonHandler:getLight(LightID),
         ok = cowboy_req:chunk(["id: ", integer_to_list(ID), "\ndata: ", Msg, "\n\n"], Req),
-        {loop, Req, ID*-1, hibernate};
+        {loop, Req, ID+1, hibernate};
 info({event,{powerEvent,Power}}, Req, ID) ->
 	{_,Msg} = jsonHandler:encodePower({powerEvent,Power}),
         ok = cowboy_req:chunk(["id: ", integer_to_list(ID), "\ndata: ", Msg, "\n\n"], Req),
-        {loop, Req, ID*-1, hibernate};
+        {loop, Req, ID+1, hibernate};
 info(_, Req, ID) ->
 	{loop, Req, ID, hibernate}.
 
