@@ -16,13 +16,13 @@ header {
 #logo {
 	position: fixed;
 	bottom: 0.25cm;
-	left: 8mm;
+	left: 5mm;
 	height: 3.8cm;
 }
 #energie {
 	position: fixed;
 	bottom: 5cm;
-	left: 0.5cm;
+	left: 2.5mm;
 	height: 8cm;
 	width: 50%;
 	overflow: hidden;
