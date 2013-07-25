@@ -2,5 +2,5 @@
 {application,lightcontrol}.
 {packages,[]}.
 {modules,[database,eventSourceHandler,jsonHandler,light,lightcontrol_app,
-          lightcontrol_sup,mainServer,plainTextHandler,restV1handler,
+          lightcontrol_sup,mainServer,plainTextHandler,rawpower,restV1handler,
           restV2handler,udpServer]}.
