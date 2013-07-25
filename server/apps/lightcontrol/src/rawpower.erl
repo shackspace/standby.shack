@@ -102,8 +102,14 @@ handle_cast(_Msg, State) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_info({pullPower}, State) ->
-	{ok, _} = gen_tcp:connect("powerraw.shack", 11111, [binary, {active, true}]),
-	erlang:send_after(2000, self(), {pullPower}),
+	case gen_tcp:connect("powerraw.shack", 11111, [binary, {active, true}]) of
+		{ok, _} ->
+			erlang:send_after(2000, self(), {pullPower});
+		{Error, ErrorMsg} ->
+			io:format(" *** ~p: handle_info({pullPower}, ...):~n\tError='~p', ErrorMsg='~p', Time='~p'~n~n",
+				[?MODULE, Error, ErrorMsg, calendar:local_time()]),
+			erlang:send_after(30000, self(), {pullPower})
+	end,
 	{noreply, State};
 handle_info({tcp,_Socket,_BinData}, State) ->
 	handle(_BinData),
