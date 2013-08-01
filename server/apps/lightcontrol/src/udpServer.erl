@@ -46,7 +46,8 @@ start_link() ->
 %% @end
 %%--------------------------------------------------------------------
 setLight(RealID, ToState) ->
-	?MODULE ! {set, RealID, ToState},
+	%try 200 times to setLight
+	?MODULE ! {set, RealID, ToState, 200},
 	ok.
 
 
