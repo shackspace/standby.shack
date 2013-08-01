@@ -148,6 +148,7 @@ handle_info({udp, SourceSocket, From, 2342, [LightID, LightState]}, State) ->
 	NewState = case {SourceSocket, From} of
 		{Socket, IP} ->
 			mainServer:updateRealLight(LightID, LightState),
+			io:format("RealID ~p is now ~p~n", [LightID, LightState]),
 			State#state{waiting = State#state.waiting -- [{LightID, LightState}]}
 	end,
 	inet:setopts(Socket, [{active, once}]),
