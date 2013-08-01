@@ -1,8 +1,8 @@
 ## Name of the node
--name lightcontrol@127.0.0.1
+-name lightcontrol@standby.shack
 
 ## Cookie for distributed erlang
--setcookie lightcontrol
+-setcookie kjdfiufdnewruz73r425hfsd6f3439iusdasdi4tou8324hkdfalsanu346454gs
 
 ## Heartbeat management; auto-restarts VM if it dies or becomes unresponsive
 ## (Disabled by default..use with caution!)
