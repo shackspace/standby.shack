@@ -22,7 +22,7 @@
 	 terminate/2,
 	 code_change/3]).
 
--record(state, {udpsocket}).
+-record(state, {udpsocket, waiting=[]}).
 %%%===================================================================
 %%% API
 %%%===================================================================
@@ -111,9 +111,18 @@ handle_cast(_Msg, State) ->
 %% @doc
 %% starts a loop, to set light
 %% @end
-handle_info({set, RealID, ToState}, State) ->
-	erlang:spawn_link(fun() -> testComplet(RealID, ToState, 200) end), %try 200 times to set light state
-	{noreply, State};
+handle_info({set, RealID, ToState, Count}, State) ->
+	NewState = case proplists:is_defined(RealID, State#state.waiting) of
+		true ->
+			io:format("waiting for ~p(~p)~n", [RealID, ToState]),
+			erlang:send_after(100, ?MODULE, {set, RealID, ToState, Count-1}),
+			State#state{waiting = State#state.waiting ++ [{RealID,ToState}]};
+		false ->
+			%try 200 times to set light state
+			erlang:spawn_link(fun() -> testComplet(RealID, ToState, 200) end),
+			State
+	end,
+	{noreply, NewState};
 
 %% @doc
 %% send Data to 'licht.shack' on port 1337
@@ -129,12 +138,13 @@ handle_info({send, Data}, State) ->
 handle_info({udp, SourceSocket, From, 2342, [LightID, LightState]}, State) ->
 	Socket = State#state.udpsocket,
 	{ok, IP} = inet:getaddr('licht.shack', inet),
-	case {SourceSocket, From} of
+	NewState = case {SourceSocket, From} of
 		{Socket, IP} ->
-			mainServer:updateRealLight(LightID, LightState)
+			mainServer:updateRealLight(LightID, LightState),
+			State#state{waiting = State#state.waiting -- [{LightID, LightState}]}
 	end,
 	inet:setopts(Socket, [{active, once}]),
-	{noreply, State};
+	{noreply, NewState};
 
 %% @doc
 %% unexpected info
