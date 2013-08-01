@@ -117,11 +117,11 @@ handle_info({set, RealID, ToState, Count}, State) ->
 		true ->
 			io:format("waiting for ~p(~p)~n", [RealID, ToState]),
 			erlang:send_after(100, ?MODULE, {set, RealID, ToState, Count-1}),
-			State#state{waiting = State#state.waiting ++ [{RealID,ToState}]};
+			State;
 		false ->
 			%try 200 times to set light state
 			erlang:spawn_link(fun() -> testComplet(RealID, ToState, 200) end),
-			State
+			State#state{waiting = State#state.waiting ++ [{RealID,ToState}]}
 	end,
 	{noreply, NewState};
 
