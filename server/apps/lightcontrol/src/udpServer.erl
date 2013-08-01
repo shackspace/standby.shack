@@ -112,16 +112,22 @@ handle_cast(_Msg, State) ->
 %% @doc
 %% starts a loop, to set light
 %% @end
+handle_info({set, RealID, ToState, 0}, State) ->
+	io:format("failed to set light ~p to ~p~n", [RealID, ToState]),
+	NewState = State#state{waiting = State#state.waiting -- [{RealID,ToState}]},
+	{noreply, NewState};
 handle_info({set, RealID, ToState, Count}, State) ->
+	io:format("waiters: ~n~p~n~n", [State#state.waiting]),
 	NewState = case proplists:is_defined(RealID, State#state.waiting) of
 		true ->
-			io:format("waiting for ~p(~p)~n", [RealID, ToState]),
+			io:format("waiting for ~p(~p count=~p)~n", [RealID, ToState, Count]),
 			erlang:send_after(100, ?MODULE, {set, RealID, ToState, Count-1}),
 			State;
 		false ->
 			%try 200 times to set light state
+			NState = State#state{waiting = State#state.waiting ++ [{RealID,ToState}]},
 			erlang:spawn_link(fun() -> testComplet(RealID, ToState, 200) end),
-			State#state{waiting = State#state.waiting ++ [{RealID,ToState}]}
+			NState
 	end,
 	{noreply, NewState};
 
