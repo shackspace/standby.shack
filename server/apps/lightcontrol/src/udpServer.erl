@@ -114,18 +114,18 @@ handle_cast(_Msg, State) ->
 %% @end
 handle_info({set, RealID, ToState, 0}, State) ->
 	io:format("failed to set light ~p to ~p~n", [RealID, ToState]),
-	NewState = State#state{waiting = State#state.waiting -- [{RealID,ToState}]},
+	NewState = State#state{waiting = State#state.waiting -- [RealID]},
 	{noreply, NewState};
 handle_info({set, RealID, ToState, Count}, State) ->
-	io:format("waiters: ~n~p~n~n", [State#state.waiting]),
-	NewState = case proplists:is_defined(RealID, State#state.waiting) of
+	io:format("waiters: ~p~n", [State#state.waiting]),
+	NewState = case lists:member(RealID, State#state.waiting) of
 		true ->
-			io:format("waiting for ~p(~p count=~p)~n", [RealID, ToState, Count]),
 			erlang:send_after(100, ?MODULE, {set, RealID, ToState, Count-1}),
 			State;
 		false ->
 			%try 200 times to set light state
-			NState = State#state{waiting = State#state.waiting ++ [{RealID,ToState}]},
+			NState = State#state{waiting = State#state.waiting ++ [RealID]},
+			io:format("add waiter ~p~n", [RealID]),
 			erlang:spawn_link(fun() -> testComplet(RealID, ToState, 200) end),
 			NState
 	end,
@@ -148,8 +148,8 @@ handle_info({udp, SourceSocket, From, 2342, [LightID, LightState]}, State) ->
 	NewState = case {SourceSocket, From} of
 		{Socket, IP} ->
 			mainServer:updateRealLight(LightID, LightState),
-			io:format("RealID ~p is now ~p~n", [LightID, LightState]),
-			State#state{waiting = State#state.waiting -- [{LightID, LightState}]}
+			io:format("remove waiter ~p~n", [LightID]),
+			State#state{waiting = State#state.waiting -- [LightID]}
 	end,
 	inet:setopts(Socket, [{active, once}]),
 	{noreply, NewState};
