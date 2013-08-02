@@ -67,10 +67,10 @@ function chartinit() {
 	});
 
 	var time = new Date();
-	time.setTime(time.getTime()-1000*500);
+	time.setTime(time.getTime()-2000*300);
 
 	for (var i = 0; i < 300; i++) {
-		time.setTime(time.getTime()+1000);
+		time.setTime(time.getTime()+2000);
 		dataP1.push({
 			x: time.getTime(),
 			y: 1000
