@@ -124,7 +124,7 @@ function updateChart(p1,p2,p3) {
 	energieChart.options.data[0].legendText = " P1: " + p1 + "W ";
 	energieChart.options.data[1].legendText = " P2: " + p2 + "W ";
 	energieChart.options.data[2].legendText = " P3: " + p3 + "W ";
-	energieChart.options.data[4].legendText = " Sum: " + sum + "W ";
+	energieChart.options.data[3].legendText = " Sum: " + sum + "W ";
 
 	energieChart.render();
 }
