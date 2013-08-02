@@ -1,0 +1,65 @@
+/******************************************************
+ * author: Mr. Pi <mrpi@mr-pi.de>
+ * copyright: 2013 Mr. Pi
+ *-----------------------------------------------------
+ * 
+ *****************************************************/
+
+body {
+	background: black;
+	color: #00ff00;
+}
+header {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	margin: 0px;
+	height: 2cm;
+	padding-left: 2.5mm;
+	padding-right: 2.5mm;
+	border-bottom: thin double #33ff33;
+	text-align: center;
+}
+#shackLogo {
+	position: fixed;
+	top: 1mm;
+	right: 5mm;
+	height: 18mm;
+}
+#powermon, #lightcontrol {
+	position: fixed;
+	bottom: 2.5mm;
+	left: 2.5mm;
+	right: 2.5mm;
+	top: 2.25cm;
+	overflow: hidden;
+	background: #521;
+	z-index: 10;
+	transition: opacity 2s;
+}
+#powermon {
+	background: #123;
+	z-index: 8;
+}
+nav {
+	position: fixed;
+	top: 1mm;
+	left:: 5mm;
+	height: 18mm;
+	z-index: 10;
+	margin: 0px;
+	padding: 0px;
+}
+nav a {
+	display: block;
+	margin-top: 0.5mm;
+	margin-bottom: 0.5mm;
+	padding: 0px;
+	padding-left: 1mm;
+	padding-right: 1mm;
+	font-size: 6mm;
+	height: 8mm;
+	border-radius: 1mm;
+	background: rgba(120,120,0,0.5);
+}

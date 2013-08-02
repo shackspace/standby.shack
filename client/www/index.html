@@ -2,11 +2,28 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>maintains</title>
-		<meta name="description" content="maintains" />
+		<title>standby.shack</title>
+		<meta name="description" content="standby.shack is a home automatic system" />
 		<meta name="author" content="Mr. Pi <mrpi@mr-pi.de>" />
+		<script src="./api/base.js" type="text/javascript"></script>
+		<script src="./api/canvasjs.min.js" type="text/javascript"></script>
+		<script src="./main/power.js" type="text/javascript"></script>
+		<script src="./main/event.js" type="text/javascript"></script>
+		<script src="./main/init.js" type="text/javascript"></script>
+		<link rel="stylesheet" type="text/css" href="./main/main.css">
 	</head>
 	<body>
-		<h1 id="heading">Just for fun</h1>
+		<header>
+			<h1 id="mainHead">standby.shack</h1>
+		</header>
+		<aside>
+			<img src="./img/stuttgart_hackerspace__bg_black__all_path.svg" id="shackLogo" />
+		</aside>
+		<nav>
+			<a href="#lightcontrol" onclick="showLightControl();">lightcontrol</a>
+			<a href="#powermon" onclick="showPowerMon();">power monitor</a>
+		</nav>
+		<div id="lightcontrol"></div>
+		<div id="powermon"></div>
 	</body>
 </html>
