@@ -11,7 +11,7 @@ function setupEventSource() {
 	source.addEventListener('message', function(event) {
 		var obj = JSON.parse(event.data);
 		if(obj.type === "power") {
-			updateChart(obj.p1,obj.p2,obj.p3);
+			updatePowerChart(obj.p1,obj.p2,obj.p3);
 		}
 	}, false);
 }
