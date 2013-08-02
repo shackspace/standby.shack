@@ -20,6 +20,7 @@
 	 removeListener/1,
 	 sendEvent/1,
 	 getListener/0,
+	 updateHttpRouter/0,
 	 logPower/4]).
 
 %% gen_server callbacks
@@ -35,6 +36,26 @@
 %%%===================================================================
 %%% API
 %%%===================================================================
+
+%%--------------------------------------------------------------------
+%% @doc
+%% updates cowboy router
+%%
+%% @spec updateHttpRouter() -> ok | error
+%% @end
+%%--------------------------------------------------------------------
+updateHttpRouter() ->
+	case file:consult(os:getenv("HOME") ++ "/.lightcontrol.conf") of
+		{ok, Options} ->
+			Dispatch = proplists:get_value(dispatch, Options),
+			cowboy:set_env(http, dispatch,
+				cowboy_router:compile(Dispatch)),
+			io:format("http router updated~n"),
+			ok;
+		_ ->
+			io:format("can't update http router, reason:~n\tcan't read config file: ~p~p~n", [os:getenv("HOME"), "/.lightcontrol.conf"]),
+			error
+	end.
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -170,6 +191,7 @@ logPower(Time,P1,P2,P3) ->
 %% @end
 %%--------------------------------------------------------------------
 init([]) ->
+	updateHttpRouter(),
 	io:format(" *** ~p: init:~n\tOpts='[]'~n~n", [?MODULE]),
 	State = #state{},
 	{ok, State}.
@@ -266,13 +288,13 @@ terminate(_Reason, _State) ->
 %% @end
 %%--------------------------------------------------------------------
 code_change(_OldVsn, State, _Extra) ->
+	updateHttpRouter(),
 	io:format(" *** ~p: code change:~n\tOldVsn='~p', State='~p', Extra='~p'~n~n", [?MODULE, _OldVsn, State, _Extra]),
 	{ok, State}.
 
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -294,3 +316,4 @@ emitEvent(Listeners, NewListener, Event) ->
 			NewListener
 	end,
 	emitEvent(Rest, NewNewListener, Event).
+
