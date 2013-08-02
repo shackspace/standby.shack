@@ -69,7 +69,7 @@ function chartinit() {
 	var time = new Date();
 	time.setTime(time.getTime()-1000*500);
 
-	for (var i = 0; i < 500; i++) {
+	for (var i = 0; i < 300; i++) {
 		time.setTime(time.getTime()+1000);
 		dataP1.push({
 			x: time.getTime(),
