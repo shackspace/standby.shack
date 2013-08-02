@@ -59,7 +59,7 @@ function chartinit() {
 				type: "line",
 				axisYType: "secondary",
 				xValueType: "dateTime",
-				showInLegend true,
+				showInLegend: true,
 				name: "Sum",
 				dataPoints: dataSum
 			}
