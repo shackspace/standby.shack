@@ -8,6 +8,7 @@ header {
 	left: 0px;
 	width: 100%;
 	margin: 0px;
+	height: 2cm;
 	padding-left: 2.5mm;
 	padding-right: 2.5mm;
 	border-bottom: thin double #33ff33;
@@ -23,8 +24,8 @@ header {
 	position: fixed;
 	bottom: 5cm;
 	left: 2.5mm;
-	height: 8cm;
 	right: 2.5mm;
+	top: 2cm;
 	overflow: hidden;
 	background: #521;
 	z-index: 7000;
