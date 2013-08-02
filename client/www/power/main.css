@@ -16,16 +16,16 @@ header {
 }
 #logo {
 	position: fixed;
-	bottom: 0.25cm;
+	top: 1mm;
 	right: 5mm;
-	height: 3.8cm;
+	height: 18mm;
 }
 #energie {
 	position: fixed;
-	bottom: 5cm;
+	bottom: 2.5mm;
 	left: 2.5mm;
 	right: 2.5mm;
-	top: 2cm;
+	top: 2.25cm;
 	overflow: hidden;
 	background: #521;
 	z-index: 7000;
