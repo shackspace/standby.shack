@@ -1,6 +1,7 @@
 dataP1 = [];
 dataP2 = [];
 dataP3 = [];
+dataSum = [];
 
 function chartinit() {
 	energieChart = new CanvasJS.Chart("energie",{
@@ -54,14 +55,21 @@ function chartinit() {
 				showInLegend: true,
 				name: "P3" ,
 				dataPoints: dataP3
+			}, {
+				type: "line",
+				axisYType: "secondary",
+				xValueType: "dateTime",
+				showInLegend true,
+				name: "Sum",
+				dataPoints: dataSum
 			}
 		]
 	});
 
 	var time = new Date();
-	time.setTime(time.getTime()-1000*300);
+	time.setTime(time.getTime()-1000*500);
 
-	for (var i = 0; i < 300; i++) {
+	for (var i = 0; i < 500; i++) {
 		time.setTime(time.getTime()+1000);
 		dataP1.push({
 			x: time.getTime(),
@@ -75,17 +83,23 @@ function chartinit() {
 			x: time.getTime(),
 			y: 1000
 		});
+		dataSum.push({
+			x: time.getTime(),
+			y: 1000
+		});
 	};
 
 	energieChart.options.data[0].legendText = " P1: " + -1 + "W ";
 	energieChart.options.data[1].legendText = " P2: " + -1 + "W ";
 	energieChart.options.data[2].legendText = " P3: " + -1 + "W ";
+	energieChart.options.data[3].legendText = " Sum: " + -1 + "W ";
 
 	energieChart.render();
 }
 function updateChart(p1,p2,p3) {
 	var time = new Date();
-	
+	var sum = p1 + p2 + p3;
+
 	dataP1.push({
 		x: time.getTime(),
 		y: p1
@@ -101,10 +115,16 @@ function updateChart(p1,p2,p3) {
 		y: p3
 	});
 	dataP3.shift();
+	dataSum.push({
+		x: time.getTime(),
+		y: sum
+	});
+	dataSum.shift();
 
 	energieChart.options.data[0].legendText = " P1: " + p1 + "W ";
 	energieChart.options.data[1].legendText = " P2: " + p2 + "W ";
 	energieChart.options.data[2].legendText = " P3: " + p3 + "W ";
+	energieChart.options.data[4].legendText = " Sum: " + sum + "W ";
 
 	energieChart.render();
 }
