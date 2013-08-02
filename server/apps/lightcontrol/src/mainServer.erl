@@ -47,7 +47,14 @@
 updateHttpRouter() ->
 	case file:consult(os:getenv("HOME") ++ "/.lightcontrol.conf") of
 		{ok, Options} ->
-			Dispatch = proplists:get_value(dispatch, Options),
+			WWWRoot = proplists:get_value(www_root, Options, "/var/www/"),
+			ModuleRoutes = proplists:get_value(module_routes, Options, []),
+			Dispatch = [{'_', ModuleRoutes ++ [
+				{"/[...]", cowboy_static, [
+					{directory, WWWRoot},
+					{mimetypes, {fun mimetypes:path_to_mimes/2, default}}
+				]}
+			]}],
 			cowboy:set_env(http, dispatch,
 				cowboy_router:compile(Dispatch)),
 			io:format("http router updated~n"),
