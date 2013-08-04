@@ -1,7 +1,7 @@
 require(["dojo/on", "dojo/dom", "dojo/dom-style", "dojo/mouse", "dojox/gfx", "dojo/request", "dojo/json", "dojo/request/xhr", "dojo/ready", "dojox/timing", "dojo/domReady!"], function(on, dom, domStyle, mouse, gfx, request, json, xhr, ready, timing){
 	var surfaceShackspace = gfx.createSurface("surfaceShackspace", 800, 600);
 	var lights = new Array();
-	var serverEventConnection = new EventSource("http://standby.shack:8091/eventsource");
+	var serverEventConnection = new EventSource("http://localhost:8091/eventsource");
 	t = new dojox.timing.Timer(1000);		//To update Background Image
 
 	lights.push(new Light([1], [156], [75], [160], [70], surfaceShackspace, [121, 122, 125, 126], 10));
@@ -13,9 +13,8 @@ require(["dojo/on", "dojo/dom", "dojo/dom-style", "dojo/mouse", "dojox/gfx", "do
 	lights.push(new Light([8], [352], [308], [208], [124], surfaceShackspace, [104, 105, 106, 107], 15));
 	lights.push(new Light([9], [586], [221], [180], [101], surfaceShackspace, [100, 101, 102, 103], 16));
 
-	var shackLogo = surfaceShackspace.createImage({x:620, y:500, width: 180, height:80, src:"logo_shack_large.png"});
-	//var background = surfaceShackspace.createImage({x:0, y:0, width: 1024, height:768, src:"Background.png"});
-	var backgroundImage = surfaceShackspace.createImage({x:0, y:0, width: 800, height:600, src:"shack_bare.png"});
+	//var background = surfaceShackspace.createImage({x:0, y:0, width: 1024, height:768, src:"ciko/Background.png"});
+	var backgroundImage = surfaceShackspace.createImage({x:0, y:0, width: 800, height:600, src:"ciko/shack_bare.png"});
 	update();
 
 	t.onTick = function(){
@@ -58,9 +57,8 @@ require(["dojo/on", "dojo/dom", "dojo/dom-style", "dojo/mouse", "dojox/gfx", "do
 
 		backgroundImage.removeShape();
 		backgroundImage.destroy();
-		backgroundImage = surfaceShackspace.createImage({x:0, y:0, width: 800, height:600, src:backName});
+		backgroundImage = surfaceShackspace.createImage({x:0, y:0, width: 800, height:600, src: "ciko/" + backName});
 		backgroundImage.moveToBack();
-		shackLogo.moveToBack();
 		//background.moveToBack();
 	}
 
@@ -121,11 +119,11 @@ require(["dojo/on", "dojo/dom", "dojo/dom-style", "dojo/mouse", "dojox/gfx", "do
 				y: yPos[key].toString(),
 				width: this.width[key],
 				height: this.height[key],
-				src: this.positionIDs[key].toString() + "-red.png"}));
+				src: "ciko/" + this.positionIDs[key].toString() + "-red.png"}));
 		}
 
 		this.switchOn = function() {
-			xhr.put("http://standby.shack:8091/2/lounge/" + this.groupID, {
+			xhr.put("http://localhost:8091/2/lounge/" + this.groupID, {
 				headers: {"Content-Type": "application/json"},
 				data: json.stringify({"type": "switchOn"})
 			});
@@ -133,7 +131,7 @@ require(["dojo/on", "dojo/dom", "dojo/dom-style", "dojo/mouse", "dojox/gfx", "do
 		}
 
 		this.switchOff = function() {
-			xhr.put("http://standby.shack:8091/2/lounge/" + this.groupID, {
+			xhr.put("http://localhost:8091/2/lounge/" + this.groupID, {
 				headers: {"Content-Type": "application/json"},
 				data: json.stringify({"type": "switchOff"})
 			});
@@ -141,7 +139,7 @@ require(["dojo/on", "dojo/dom", "dojo/dom-style", "dojo/mouse", "dojox/gfx", "do
 		}
 
 		this.toggle = function(){
-			xhr.put("http://standby.shack:8091/2/lounge/" + this.groupID, {
+			xhr.put("http://localhost:8091/2/lounge/" + this.groupID, {
 				headers: {"Content-Type": "application/json"},
 				data: json.stringify({"type": "toggle"})
 			});
@@ -186,7 +184,7 @@ require(["dojo/on", "dojo/dom", "dojo/dom-style", "dojo/mouse", "dojox/gfx", "do
 						y: yPos[key].toString(),
 						width: this.width[key],
 						height: this.height[key],
-						src: this.positionIDs[key].toString() + "-red.png"});
+						src: "ciko/" + this.positionIDs[key].toString() + "-red.png"});
 				}
 				else{
 					this.visual[key] = surface.createImage({
@@ -194,7 +192,7 @@ require(["dojo/on", "dojo/dom", "dojo/dom-style", "dojo/mouse", "dojox/gfx", "do
 						y: yPos[key].toString(),
 						width: this.width[key],
 						height: this.height[key],
-						src: this.positionIDs[key].toString() + "-green.png"});
+						src: "ciko/" + this.positionIDs[key].toString() + "-green.png"});
 				}
 				this.visual[key].connect("onclick", function(e){
 					console.log(e.gfxTarget);
@@ -213,8 +211,8 @@ require(["dojo/on", "dojo/dom", "dojo/dom-style", "dojo/mouse", "dojox/gfx", "do
 		}
 
 		this.update = function(){
-			console.log("Requesting: http://standby.shack:8091/2/lounge/" + this.groupID);
-			request.get("http://standby.shack:8091/2/lounge/" + this.groupID, { headers:{"Content-Type": "application/json"} }).then(
+			console.log("Requesting: http://localhost:8091/2/lounge/" + this.groupID);
+			request.get("http://localhost:8091/2/lounge/" + this.groupID, { headers:{"Content-Type": "application/json"} }).then(
 				function(response){
 					console.log(response);
 					if(response != "{}"){

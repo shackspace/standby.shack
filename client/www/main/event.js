@@ -18,10 +18,17 @@ function setupEventSource() {
 
 function showLightControl() {
 	document.getElementById("lightcontrol").style.opacity = "1.0";
-	document.getElementById("lightcontrol").style.zindex = 10;
+	document.getElementById("lightcontrol").style.zIndex = 12;
 }
 
 function showPowerMon() {
-	document.getElementById("lightcontrol").style.opacity = "0.1";
-	document.getElementById("lightcontrol").style.zindex = 8;
+	document.getElementById("lightcontrol").style.opacity = "0.0";
+	window.setTimeout(function() {
+		document.getElementById("lightcontrol").style.zIndex = 8;
+	}, 500);
+}
+function lightResize() {
+	document.getElementById("appLayout").style.zoom =
+		document.getElementById("lightcontrol").clientHeight /
+		document.getElementById("appLayout").clientHeight;
 }

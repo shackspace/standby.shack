@@ -10,7 +10,7 @@ body {
 	color: #00ff00;
 }
 header {
-	position: fixed;
+	position: absolute;
 	top: 0px;
 	left: 0px;
 	width: 100%;
@@ -22,28 +22,38 @@ header {
 	text-align: center;
 }
 #shackLogo {
-	position: fixed;
+	position: absolute;
 	top: 1mm;
 	right: 5mm;
-	height: 18mm;
+	height: 16mm;
+	border: 1mm outset rgb(30,30,0);
+}
+#shackLogo:active {
+	border: 1mm inset rgb(30,30,0);
 }
 #powermon, #lightcontrol {
-	position: fixed;
+	position: absolute;
 	bottom: 2.5mm;
 	left: 2.5mm;
 	right: 2.5mm;
 	top: 2.25cm;
 	overflow: hidden;
-	background: #521;
+	background: #000;
 	z-index: 10;
-	transition: opacity 2s;
+	transition: opacity 500ms;
+}
+#lightcontrol {
+	text-align: center;
+}
+#lightcontrol svg {
+	border: 1mm #fff solid;
+	border-radius: 1mm;
 }
 #powermon {
 	background: #123;
-	z-index: 8;
 }
 nav {
-	position: fixed;
+	position: absolute;
 	top: 1mm;
 	left:: 5mm;
 	height: 18mm;
@@ -58,8 +68,25 @@ nav a {
 	padding: 0px;
 	padding-left: 1mm;
 	padding-right: 1mm;
-	font-size: 6mm;
-	height: 8mm;
+	font-size: 5mm;
+	height: 6.5mm;
+	border: 1mm outset rgb(130,130,0);
 	border-radius: 1mm;
-	background: rgba(120,120,0,0.5);
+	background: rgb(110,110,0);
+	color: #00ff00;
+	text-decoration: none;
+}
+nav a:visited {
+	color: #00ff00;
+	text-decoration: none;
+}
+nav a:active {
+	border: 1mm inset rgb(130,130,0);
+}
+nav select {
+	background: rgba(0,0,0,0);
+	color: #00ff00;
+	border: none;
+	font-size: 5mm;
+	font-style: italic;
 }

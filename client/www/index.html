@@ -10,24 +10,41 @@
 		<script src="./main/power.js" type="text/javascript"></script>
 		<script src="./main/event.js" type="text/javascript"></script>
 		<script src="./main/init.js" type="text/javascript"></script>
-		<script src="./ciko/ciko.js" type="text/javascript"></script>
 		<link rel="stylesheet" type="text/css" href="./main/main.css">
-		<link rel="stylesheet" type="text/css" href="./api/dijit/themes/claro/claro.css">
+		<link rel="stylesheet" type="text/css" href="./dijit/themes/claro/claro.css">
 	</head>
 	<body>
 		<header>
 			<h1 id="mainHead">standby.shack</h1>
 		</header>
 		<aside>
-			<img src="./img/stuttgart_hackerspace__bg_black__all_path.svg" id="shackLogo" />
+			<a href="http://shackspace.de" target="_new"><img src="./img/stuttgart_hackerspace__bg_black__all_path.svg" id="shackLogo"/></a>
 		</aside>
 		<nav>
 			<a href="#lightcontrol" onclick="showLightControl();">lightcontrol</a>
-			<a href="#powermon" onclick="showPowerMon();">power monitor</a>
+			<a href="#powermon" onclick="showPowerMon();">power monitor:<select>
+				<option value="30">1min</option>
+				<option value="300">10min</option>
+				<option value="900" selected="true">½h</option>
+				<option value="1800">1h</option>
+				<option value="7200">4h</option>
+				<option value="18000">10h</option>
+				<option value="36000">20h</option>
+				<option value="86400">48h</option>
+			</select></a>
 		</nav>
-		<div id="lightcontrol">
-			<div id="cikoLight"></div>
-		</div>
 		<div id="powermon"></div>
+		<div id="lightcontrol">
+			<div id="appLayout" class="demoLayout" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design: 'headline' ">
+				<div id="appAreaCenter" class="centerPanel" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'center' ">
+					<div id="surfaceShackspace"></div>
+				</div>
+			</div>
+		</div>
+		<!-- load Dojo -->
+		<script src="dojo/dojo.js"
+			data-dojo-config="async: true, parseOnLoad: true">
+		</script>
+		<script src="./ciko/ciko.js" type="text/javascript"></script>
 	</body>
 </html>
