@@ -8,23 +8,48 @@
 curL=0, curR=0, curO=0;
 lights = new Array();
 
+/*set background areas light*/
 function showBgLight(inL,inR,inO) {
-	document.getElementById("lbg000").style.zIndex = 100;
-	document.getElementById("lbg001").style.zIndex = 100;
-	document.getElementById("lbg010").style.zIndex = 100;
-	document.getElementById("lbg011").style.zIndex = 100;
-	document.getElementById("lbg100").style.zIndex = 100;
-	document.getElementById("lbg101").style.zIndex = 100;
-	document.getElementById("lbg110").style.zIndex = 100;
-	document.getElementById("lbg111").style.zIndex = 100;
-	document.getElementById("lbg"+inO+inR+inL).style.zIndex = 101;
+	document.getElementById("lbg001").style.opacity = 0.0;
+	document.getElementById("lbg010").style.opacity = 0.0;
+	document.getElementById("lbg011").style.opacity = 0.0;
+	document.getElementById("lbg100").style.opacity = 0.0;
+	document.getElementById("lbg101").style.opacity = 0.0;
+	document.getElementById("lbg110").style.opacity = 0.0;
+	document.getElementById("lbg111").style.opacity = 0.0;
+	document.getElementById("lbg"+inO+inR+inL).style.opacity = 1.0;
 }
 
+/*updates lights at graphics*/
+function updateLight() {
+	var grL=0,grR=0,grO=0;
+
+	for(var i in lights) {
+		var light = JSON.parse(httpGet("/2/lounge/"+i));
+		lights[i].state = light.state;
+		if(light.state === 1) {
+			document.getElementById("llid"+i+"off").style.zIndex = 200;
+			document.getElementById("llid"+i+"on").style.zIndex = 201;
+			grL = lights[i].grL | grL;
+			grR = lights[i].grR | grR;
+			grO = lights[i].grO | grO;
+		} else {
+			document.getElementById("llid"+i+"off").style.zIndex = 201;
+			document.getElementById("llid"+i+"on").style.zIndex = 200;
+		}
+	}
+
+	curL=grL, curR=grR, curO=grO;
+	showBgLight(curL,curR,curO);
+}
+
+/*sends a request*/
 function setLight(id, state) {
-	alert("set light: " + id + " to " + state);
+	httpPut("/2/lounge/" + id, JSON.stringify({"type":"set","state":state}));
 	showBgLight(curL, curR, curO);
 }
 
+/*preview light state*/
 function previewLight(id, state) {
 	if(state === 1) {
 		showBgLight(
@@ -42,6 +67,8 @@ function previewLight(id, state) {
 }
 
 function initLights() {
+	document.getElementById("lbg000").style.zIndex = 99;
+	document.getElementById("lbg000").style.opacity = 0.0;
 	showBgLight(0,0,0);
 	initLight(1,156,75,160,70,10,0,0,1);
 	initLight(2,347,27,143,61,11,0,0,1);

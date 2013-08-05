@@ -13,6 +13,7 @@ window.onload = function() {
 	}
 	initPowerChart("powermon");
 	initLights();
+	updateLight();
 	lightResize();
 }
 window.onresize = function(event) {

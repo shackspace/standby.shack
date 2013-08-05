@@ -50,6 +50,11 @@ updateHttpRouter() ->
 			WWWRoot = proplists:get_value(www_root, Options, "/var/www/"),
 			ModuleRoutes = proplists:get_value(module_routes, Options, []),
 			Dispatch = [{'_', ModuleRoutes ++ [
+				{"/", cowboy_static, [
+					{directory, WWWRoot},
+					{file, "index.html"},
+					{mimetypes, {fun mimetypes:path_to_mimes/2, default}}
+				]},
 				{"/[...]", cowboy_static, [
 					{directory, WWWRoot},
 					{mimetypes, {fun mimetypes:path_to_mimes/2, default}}

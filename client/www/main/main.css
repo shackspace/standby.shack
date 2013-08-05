@@ -50,6 +50,7 @@ header {
 }
 #lightcontrol #lightcontainer img {
 	z-index: 100;
+	transition: opacity 1000ms;
 }
 nav {
 	position: absolute;

@@ -7,8 +7,7 @@
 [X] plain text operations (see json operations)
 [X] event management
 [ ] xml operations (see json operations)
-[ ] websocket
 [X] eventsource
-[ ] client site stuff
-[ ] release
+[X] client site stuff
+[X] release
 [X] database

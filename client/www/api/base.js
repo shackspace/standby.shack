@@ -8,7 +8,7 @@
 function httpPut(theUrl,data) {
 	var xmlhttp=new XMLHttpRequest();
 	xmlhttp.open("PUT", theUrl, true);
-	xmlhttp.setRequestHeader('Content-Type', 'text/plain');
+	xmlhttp.setRequestHeader('Content-Type', 'application/json');
 	xmlhttp.send(data);
 }
 
