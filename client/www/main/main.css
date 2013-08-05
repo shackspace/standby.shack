@@ -16,8 +16,6 @@ header {
 	width: 100%;
 	margin: 0px;
 	height: 2cm;
-	padding-left: 2.5mm;
-	padding-right: 2.5mm;
 	border-bottom: thin double #33ff33;
 	text-align: center;
 }
@@ -42,15 +40,16 @@ header {
 	z-index: 10;
 	transition: opacity 500ms;
 }
-#lightcontrol {
-	text-align: center;
+#lightcontrol .lbg {
+	position: absolute;
 }
-#lightcontrol svg {
-	border: 1mm #fff solid;
-	border-radius: 1mm;
+#lightcontrol #lightcontainer {
+	height: 600px;
+	width: 800px;
+	margin: auto;
 }
-#powermon {
-	background: #123;
+#lightcontrol #lightcontainer img {
+	z-index: 100;
 }
 nav {
 	position: absolute;

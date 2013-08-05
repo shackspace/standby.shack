@@ -28,7 +28,7 @@ function showPowerMon() {
 	}, 500);
 }
 function lightResize() {
-	document.getElementById("appLayout").style.zoom =
+	document.getElementById("lightcontainer").style.zoom =
 		document.getElementById("lightcontrol").clientHeight /
-		document.getElementById("appLayout").clientHeight;
+		document.getElementById("lightcontainer").clientHeight;
 }

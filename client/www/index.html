@@ -8,6 +8,7 @@
 		<script src="./api/base.js" type="text/javascript"></script>
 		<script src="./api/canvasjs.min.js" type="text/javascript"></script>
 		<script src="./main/power.js" type="text/javascript"></script>
+		<script src="./main/light.js" type="text/javascript"></script>
 		<script src="./main/event.js" type="text/javascript"></script>
 		<script src="./main/init.js" type="text/javascript"></script>
 		<link rel="stylesheet" type="text/css" href="./main/main.css">
@@ -35,16 +36,16 @@
 		</nav>
 		<div id="powermon"></div>
 		<div id="lightcontrol">
-			<div id="appLayout" class="demoLayout" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design: 'headline' ">
-				<div id="appAreaCenter" class="centerPanel" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'center' ">
-					<div id="surfaceShackspace"></div>
-				</div>
+			<div id="lightcontainer">
+				<img src="./ciko/zone000.png" id="lbg000" class="lbg" />
+				<img src="./ciko/zone001.png" id="lbg001" class="lbg" />
+				<img src="./ciko/zone010.png" id="lbg010" class="lbg" />
+				<img src="./ciko/zone011.png" id="lbg011" class="lbg" />
+				<img src="./ciko/zone100.png" id="lbg100" class="lbg" />
+				<img src="./ciko/zone101.png" id="lbg101" class="lbg" />
+				<img src="./ciko/zone110.png" id="lbg110" class="lbg" />
+				<img src="./ciko/zone111.png" id="lbg111" class="lbg" />
 			</div>
 		</div>
-		<!-- load Dojo -->
-		<script src="dojo/dojo.js"
-			data-dojo-config="async: true, parseOnLoad: true">
-		</script>
-		<script src="./ciko/ciko.js" type="text/javascript"></script>
 	</body>
 </html>
