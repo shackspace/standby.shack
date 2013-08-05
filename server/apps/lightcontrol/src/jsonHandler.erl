@@ -36,7 +36,12 @@ getLight(ID) ->
 getLight([], DataPreEncode, IsON) ->
 	DataPreEncode ++ [{"state", IsON}];
 getLight([{ID, State}], [DataPreEncode], 0) ->
-	[DataPreEncode, {"id", ID}, {"state", State}, {integer_to_list(ID), State}];
+	[DataPreEncode,
+		{"id", ID},
+		{"state", State},
+		{integer_to_list(ID), State},
+		{"address", lists:map(fun(X) -> list_to_binary(X) end, mainServer:getAddress(ID))}
+	];
 getLight(Data, DataPreEncode, IsON) ->
 	[{ID, State}|Rest] = Data,
 	NewIsOn = case State of

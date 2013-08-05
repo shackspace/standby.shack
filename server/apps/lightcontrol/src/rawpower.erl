@@ -112,7 +112,11 @@ handle_info({pullPower}, State) ->
 	end,
 	{noreply, State};
 handle_info({tcp,_Socket,_BinData}, State) ->
-	handle(_BinData),
+	try handle(_BinData)
+	catch
+		EType:EMsg ->
+			io:format(" *** ~p: handle~n\tEType:~p, EMsg:~p, Args:~p~n~n", [?MODULE, EType, EMsg, _BinData])
+	end,
 	{noreply, State};
 handle_info({tcp_closed,_}, State) ->
 	{noreply, State};
@@ -162,10 +166,10 @@ code_change(_OldVsn, State, _Extra) ->
 %%--------------------------------------------------------------------
 handle(_BinData) ->
 	Data = binary:split(_BinData, [<<"\r\n">>], [global,trim]),
-	Time = list_to_integer(binary:bin_to_list(lists:nth(1,Data),{20,10})),
-	P1 = list_to_integer(binary:bin_to_list(lists:nth(13,Data),{16,5})),
-	P2 = list_to_integer(binary:bin_to_list(lists:nth(14,Data),{16,5})),
-	P3 = list_to_integer(binary:bin_to_list(lists:nth(15,Data),{16,5})),
+	{Time, _} = string:to_integer(binary:bin_to_list(lists:nth(1,Data),{20,10})),
+	{P1, _} = string:to_integer(binary:bin_to_list(lists:nth(13,Data),{16,5})),
+	{P2, _} = string:to_integer(binary:bin_to_list(lists:nth(14,Data),{16,5})),
+	{P3, _} = string:to_integer(binary:bin_to_list(lists:nth(15,Data),{16,5})),
 	mainServer:sendEvent({powerEvent,[{time,Time},{p1,P1},{p2,P2},{p3,P3}]}),
 	mainServer:logPower(Time,P1,P2,P3),
 	ok.

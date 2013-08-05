@@ -21,7 +21,22 @@ function showBgLight(inL,inR,inO) {
 }
 
 /*updates lights at graphics*/
-function updateLight() {
+function updateLight(id, state) {
+	lights[id].state = state;
+	if(state === 1) {
+		document.getElementById("llid"+id+"off").style.zIndex = 200;
+		document.getElementById("llid"+id+"on").style.zIndex = 201;
+		curL = curL | lights[id].grL;
+		curR = curR | lights[id].grR;
+		curO = curO | lights[id].grO;
+		showBgLight(curL, curR, curO);
+	} else {
+		document.getElementById("llid"+id+"off").style.zIndex = 201;
+		document.getElementById("llid"+id+"on").style.zIndex = 200;
+		updateLights();
+	}
+}
+function updateLights() {
 	var grL=0,grR=0,grO=0;
 
 	for(var i in lights) {
@@ -74,11 +89,12 @@ function initLights() {
 	initLight(2,347,27,143,61,11,0,0,1);
 	initLight(3,204,139,174,84,12,0,0,1);
 	initLight(4,407,81,155,72,13,0,0,1);
-	initLight(5,331,234,71,53,18,1,1,1);
-	initLight(6,535,162,66,46,19,1,1,1);
+	initLight(5,331,234,71,53,18,0,1,0);
+	initLight(6,535,162,66,46,19,0,1,0);
 	initLight(7,49,417,249,156,14,1,0,0);
 	initLight(8,352,308,208,124,15,0,1,0);
 	initLight(9,586,221,180,101,16,0,1,0);
+	updateLights();
 }
 
 function initLight(idIntern, xPos, yPos, width, height, idAPI, inL, inR, inO) {

@@ -14,7 +14,7 @@ function setupEventSource() {
 			updatePowerChart(obj.p1,obj.p2,obj.p3);
 		}
 		else if(obj.type === "states") {
-			updateLight();
+			updateLight(obj.address[1],obj.state);
 		}
 	}, false);
 }

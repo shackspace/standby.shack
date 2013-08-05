@@ -21,6 +21,7 @@
 	 sendEvent/1,
 	 getListener/0,
 	 updateHttpRouter/0,
+	 getAddress/1,
 	 logPower/4]).
 
 %% gen_server callbacks
@@ -125,6 +126,17 @@ start_link() ->
 	io:format(" *** ~p: start link~n~n", [?MODULE]),
 	gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
+
+%%--------------------------------------------------------------------
+%% @doc
+%% get address of light
+%%
+%% @spec getAddress(ID) -> Address | error
+%% @end
+%%--------------------------------------------------------------------
+getAddress(ID) ->
+	database:getAddress(ID).	
+
 %%--------------------------------------------------------------------
 %% @doc
 %% get light status
@@ -143,7 +155,6 @@ getLight(ID) ->
 %% @end
 %%--------------------------------------------------------------------
 setLight(ID, State) ->
-	io:format("set light ~p to ~p~n", [ID, State]),
 	light:setLight(ID, State).
 
 %%--------------------------------------------------------------------

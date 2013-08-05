@@ -15,6 +15,8 @@
 	 getState/1,
 	 getPossibleState/1,
 	 getAllID/0,
+	 getAddress/1,
+	 getPowerLog/1,
 	 logPower/4]).
 
 -record(idmap,{id,realid}).
@@ -54,7 +56,8 @@ init() ->
 			]),
 	{atomic,ok} = mnesia:create_table(powerlog, [
 			{attributes, record_info(fields, powerlog)},
-			{disc_copies, [node()]}
+			{disc_copies, [node()]},
+			{type, ordered_set}
 			]),
 	ok = init([
 				{100,26,["lounge","16","4"]},
@@ -116,7 +119,26 @@ getRealID(ID) ->
 		_ ->
 			error
 	end.
-	
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% get the address of light
+%%
+%% @spec getAddress(FakeID) -> Address | error
+%% @end
+%%--------------------------------------------------------------------
+getAddress(FakeID) ->
+	case mnesia:dirty_read(addressid, FakeID) of
+		[] ->
+			error;
+		[{addressid,FakeID,A1,A2,A3}] ->
+			[A1,A2,A3];
+		_ ->
+			error
+	end.
+
+
 %%--------------------------------------------------------------------
 %% @doc
 %% get ID(s)(fake ID(s)) which match Address
@@ -246,3 +268,26 @@ logPower(Time,P1,P2,P3) ->
 			error
 	end.
 
+
+%%--------------------------------------------------------------------
+%% @doc
+%% get the last N power entries
+%%
+%% @spec getPowerLog(N) -> PowerLog | error
+%% @end
+%%--------------------------------------------------------------------
+getPowerLog(N) when N < 200000 ->
+	{atomic,Res} = mnesia:transaction(fun() -> getPowerLogi(N) end),
+	Res.
+
+getPowerLogi(N) ->
+	[{powerlog, TimeStamp, P1, P2, P3}] = mnesia:read(powerlog,mnesia:last(powerlog)),
+	getPowerLogi(N-1, TimeStamp, {[TimeStamp], [P1], [P2], [P3]}).
+
+getPowerLogi(0, _, Res) ->
+	Res;
+
+getPowerLogi(N, Prev, {OldTimeStamp, OldP1, OldP2, OldP3}) ->
+	Cur = mnesia:prev(powerlog, Prev),
+	[{powerlog, TimeStamp, P1, P2, P3}] = mnesia:read(powerlog, Cur),
+	getPowerLogi(N-1, Cur, {OldTimeStamp ++ [TimeStamp], OldP1 ++ [P1], OldP2 ++ [P2], OldP3 ++ [P3]}).

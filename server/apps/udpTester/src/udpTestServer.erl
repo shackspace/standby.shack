@@ -5,14 +5,12 @@
 %%%
 %%% @end
 %%%-------------------------------------------------------------------
-
--module(udpServer).
+-module(udpTestServer).
 
 -behaviour(gen_server).
 
 %% API
--export([start_link/0,
-	 setLight/2]).
+-export([start_link/0]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -23,6 +21,7 @@
 	 code_change/3]).
 
 -record(state, {udpsocket}).
+
 %%%===================================================================
 %%% API
 %%%===================================================================
@@ -37,19 +36,6 @@
 start_link() ->
 	io:format(" *** ~p: start link~n~n", [?MODULE]),
 	gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
-
-%%--------------------------------------------------------------------
-%% @doc
-%% set the light state based on the RealID, and RealState
-%%
-%% @spec setLight(RealID, ToState) -> ok
-%% @end
-%%--------------------------------------------------------------------
-setLight(RealID, ToState) ->
-	%try 200 times to setLight
-	?MODULE ! {set, RealID, ToState},
-	ok.
-
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -68,7 +54,7 @@ setLight(RealID, ToState) ->
 %%--------------------------------------------------------------------
 init([]) ->
 	io:format(" *** ~p: init:~n\tOpts='[]'~n~n", [?MODULE]),
-	{ok, UDPSocket} = gen_udp:open(2342, [list, {active,once}, {broadcast,true}, {reuseaddr, true}]),
+	{ok, UDPSocket} = gen_udp:open(1337, [list, {active,once}, {broadcast,true}, {reuseaddr, true}]),
 	State=#state{udpsocket=UDPSocket},
 	{ok, State}.
 
@@ -91,9 +77,6 @@ handle_call(_Request, _From, State) ->
 	Reply = ok,
 	{reply, Reply, State}.
 
-
-
-
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
@@ -108,44 +91,21 @@ handle_cast(_Msg, State) ->
 	io:format(" *** ~p: unexpected cast:~n\tMsg='~p', State='~p'~n~n", [?MODULE, _Msg, State]),
 	{noreply, State}.
 
-
+%%--------------------------------------------------------------------
+%% @private
 %% @doc
-%% starts a loop, to set light
-%% @end
-handle_info({set, RealID, ToState}, State) ->
-	erlang:spawn_link(fun() -> testComplet(RealID, ToState, 200) end),
-	{noreply, State};
-
-%% @doc
-%% send Data to 'licht.shack' on port 1337
-%% @end
-handle_info({send, Data}, State) ->
-	gen_udp:send(State#state.udpsocket, 'licht.shack', 1337, Data),
-	{noreply, State};
-
-%% @doc
-%% recive udp package and update light state in database if
-%% sender match 'licht.shack' 
-%% @end
-handle_info({udp, SourceSocket, From, _, [LightID, LightState]}, State) ->
-	Socket = State#state.udpsocket,
-	{ok, IP} = inet:getaddr('licht.shack', inet),
-	case {SourceSocket, From} of
-		{Socket, IP} ->
-			mainServer:updateRealLight(LightID, LightState);
-		Error ->
-			io:format(" *** ~p: error handle_info: ~p~n", [?MODULE, Error])
-	end,
-	inet:setopts(Socket, [{active, once}]),
-	{noreply, State};
-
-%% @doc
-%% unexpected info
+%% Handling all non call/cast messages
+%%
 %% @spec handle_info(Info, State) -> {noreply, State} |
 %%                                   {noreply, State, Timeout} |
 %%                                   {stop, Reason, State}
 %% @end
-
+%%--------------------------------------------------------------------
+handle_info({udp,_,_,2342,[165,90,LightID,LightState]}, State) ->
+	gen_udp:send(State#state.udpsocket, 'localhost', 2342, [LightID, LightState]),
+	inet:setopts(State#state.udpsocket, [{active, once}]),
+	io:format(" --- ~p:\n\tsend: ~p~n", [?MODULE, [LightID, LightState]]),
+	{noreply, State};
 handle_info(_Info, State) ->
 	io:format(" *** ~p: unexpected info:~n\tInfo='~p', State='~p'~n~n", [?MODULE, _Info, State]),
 	{noreply, State}.
@@ -180,26 +140,3 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-
-
-%%--------------------------------------------------------------------
-%% @doc
-%% send udp again as long state hasn't been set correctly
-%%
-%% @spec testComplet(_RealID, _ToState, RetryNumber) -> Reply
-%% @end
-%%--------------------------------------------------------------------
-testComplet(_RealID, _ToState, 0) ->
-	error;
-
-testComplet(RealID, ToState, Count) ->
-	?MODULE ! {send, [16#A5,16#5A,RealID,ToState]},
-	timer:sleep(100),
-	case mainServer:getRealLight(RealID) of
-		ToState ->
-			%io:format(" *** ~p:~n\tLight ~p is now ~p. ~n~n", [?MODULE, LightID, LightState]),
-			ok;
-		_ ->
-			io:format("~p ",[Count]),
-			testComplet(RealID, ToState, Count-1)
-	end.
