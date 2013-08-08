@@ -1,0 +1,4 @@
+%% encoding: UTF-8
+{application,udpTester}.
+{packages,[]}.
+{modules,[tcpHandler,udpTestServer,udpTester_app,udpTester_sup]}.
