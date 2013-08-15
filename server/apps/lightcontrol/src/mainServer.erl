@@ -61,7 +61,9 @@ updateHttpRouter() ->
 					{mimetypes, {fun mimetypes:path_to_mimes/2, default}}
 				]}
 			]}],
-			cowboy:set_env(http, dispatch,
+			cowboy:set_env(http80, dispatch,
+				cowboy_router:compile(Dispatch)),
+			cowboy:set_env(http8091, dispatch,
 				cowboy_router:compile(Dispatch)),
 			io:format("http router updated~n"),
 			ok;

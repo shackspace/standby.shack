@@ -46,7 +46,10 @@ start(_StartType, _StartArgs) ->
 			]}
 		]}
 	]),
-	{ok, _} = cowboy:start_http(http, 100, [{port, 8091}], [
+	{ok, _} = cowboy:start_http(http8091, 100, [{port, 8091}], [
+		{env, [{dispatch, Dispatch}]}
+	]),
+	{ok, _} = cowboy:start_http(http80, 500, [{port, 80}], [
 		{env, [{dispatch, Dispatch}]}
 	]),
 	lightcontrol_sup:start_link().
