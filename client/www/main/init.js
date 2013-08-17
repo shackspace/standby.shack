@@ -15,7 +15,6 @@ window.onload = function() {
 	initLights();
 	lightResize();
 	if(window.location.hash == "#powermon") {
-		initPowerChart("powermon", document.getElementById('powerLogNum').value);
 		showPowerMon();
 	}
 }

@@ -12,7 +12,6 @@ dataSum = [];
 powerdiv = "";
 
 function initPowerChart(inpowerdiv, numLog) {
-	document.getElementById(inpowerdiv).innerHTML="";
 	powerdiv = inpowerdiv;
 
 	energieChart = new CanvasJS.Chart(powerdiv,{
@@ -78,13 +77,9 @@ function initPowerChart(inpowerdiv, numLog) {
 	});
 
 	var powerLog = JSON.parse(httpGet("/2/powerLog/" + numLog));
-	dataP1 = [];
-	dataP2 = [];
-	dataP3 = [];
-	dataSum = [];
 
 	var time = new Date();
-	time.setTime(time.getTime()-2000*numLog);
+	time.setTime(time.getTime()-(2000*numLog));
 
 	for (var i = 1; i <= numLog; i++) {
 		time.setTime(time.getTime()+2000);
