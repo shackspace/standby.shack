@@ -59,8 +59,8 @@ function updateLights() {
 }
 
 /*sends a request*/
-function setLight(id, state) {
-	httpPut("/2/lounge/" + id, JSON.stringify({"type":"set","state":state}));
+function toggleLight(id) {
+	httpPut("/2/lounge/" + id, JSON.stringify({"type":"toggle"}));
 	showBgLight(curL, curR, curO);
 }
 
@@ -104,13 +104,13 @@ function initLight(idIntern, xPos, yPos, width, height, idAPI, inL, inR, inO) {
 		document.getElementById("lightcontainer").innerHTML +
 		"<img src=\"./ciko/"+ idIntern +"-green.png\"" +
 			" id=\"llid"+ idAPI +"on\"" + 
-			" onclick=\"setLight("+ idAPI +", 0);\"" +
+			" onclick=\"toggleLight("+ idAPI +");\"" +
 			" onmouseover=\"previewLight("+ idAPI +", 0);\"" +
 			" onMouseout=\"showBgLight(curL,curR,curO);\"" +
 		" />" +
 		"<img src=\"./ciko/"+ idIntern +"-red.png\"" + 
 			" id=\"llid"+ idAPI +"off\" " + 
-			" onclick=\"setLight("+ idAPI +", 1);\"" +
+			" onclick=\"toggleLight("+ idAPI +");\"" +
 			" onmouseover=\"previewLight("+ idAPI +", 1);\"" +
 			" onMouseout=\"showBgLight(curL,curR,curO);\"" +
 		" />";
