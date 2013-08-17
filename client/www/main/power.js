@@ -140,3 +140,35 @@ function updatePowerChart(p1,p2,p3) {
 
 	energieChart.render();
 }
+
+function updatePowerLog(numLog) {
+	var powerLog = JSON.parse(httpGet("/2/powerLog/" + numLog));
+
+	var time = new Date();
+	time.setTime(time.getTime()-(2000*numLog));
+	
+	dataP1 = [];
+	dataP2 = [];
+	dataP3 = [];
+	dataSum = [];
+
+	for (var i = 1; i <= numLog; i++) {
+		time.setTime(time.getTime()+2000);
+		dataP1.push({
+			x: time.getTime(),
+			y: powerLog.p1[numLog-i]
+		});
+		dataP2.push({
+			x: time.getTime(),
+			y: powerLog.p2[numLog-i]
+		});
+		dataP3.push({
+			x: time.getTime(),
+			y: powerLog.p3[numLog-i]
+		});
+		dataSum.push({
+			x: time.getTime(),
+			y: powerLog.p1[numLog-i] + powerLog.p2[numLog-i] + powerLog.p3[numLog-i]
+		});
+	};
+}
