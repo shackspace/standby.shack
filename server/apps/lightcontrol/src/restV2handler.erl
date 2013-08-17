@@ -121,7 +121,8 @@ applicationJsonGet(Req, State) ->
 		error ->
 			<<"{\"type\":\"error\",\"error\":\"can't convert url\"}">>;
 		{powerLog, N} ->
-			jsonHandler:getPowerLog(N);
+			{_, PowerLog} = jsonHandler:getPowerLog(N),
+			PowerLog;
 		ID ->
 			{_, Lights} = jsonHandler:getLight(ID),
 			Lights
@@ -164,7 +165,7 @@ convertURL_ID(Req) ->
 		[<<"powerLog">>] ->
 			{powerLog, 100};
 		[<<"powerLog">>, N] ->
-			{powerLog, N};
+			{powerLog, string:to_integer(binary_to_list(N))};
 		[<<"light">>] ->
 			all;
 		[<<"light">>, IDstr] ->
