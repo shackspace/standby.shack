@@ -120,6 +120,8 @@ applicationJsonGet(Req, State) ->
 	Data = case convertURL_ID(Req) of
 		error ->
 			<<"{\"type\":\"error\",\"error\":\"can't convert url\"}">>;
+		{powerLog, N} ->
+			jsonHandler:getPowerLog(N);
 		ID ->
 			{_, Lights} = jsonHandler:getLight(ID),
 			Lights
@@ -159,6 +161,10 @@ applicationJsonPut(Req, State) ->
 convertURL_ID(Req) ->
 	{Path, _} = cowboy_req:path_info(Req),
 	case Path of
+		[<<"powerLog">>] ->
+			{powerLog, 100};
+		[<<"powerLog">>, N] ->
+			{powerLog, N};
 		[<<"light">>] ->
 			all;
 		[<<"light">>, IDstr] ->

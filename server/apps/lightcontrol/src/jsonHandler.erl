@@ -10,6 +10,7 @@
 
 -export([getLight/1,
 	 setLight/2,
+	 getPowerLog/1,
 	 encodePower/1]).
 
 
@@ -108,3 +109,14 @@ encodePower(_) ->
 	JSON = <<"{\"type\":\"error\",\"error\":\"can't parse power event\"}">>,
 	{error, JSON}.
 
+
+%%--------------------------------------------------------------------
+%% @doc
+%% get last N powerStates as JSON-String
+%%
+%% @spec getPowerLog(N) -> PowerLogAsJSON | error
+%% @end
+%%--------------------------------------------------------------------
+getPowerLog(N) ->
+	{Time,P1,P2,P3} = database:getPowerLog(N),
+	json:encode({[{type, <<"powerLog">>},{time,Time},{p1,P1},{p2,P2},{p3,P3}]}).
