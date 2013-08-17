@@ -1,7 +1,7 @@
 {application, lightcontrol,
  [
   {description, "light controll application and server for licht.shack, see http://shackspace.de"},
-  {vsn, "2.2.2-r2"},
+  {vsn, "2.2.2-r3"},
   {registered, []},
   {applications, [
                   kernel,

@@ -165,8 +165,9 @@ convertURL_ID(Req) ->
 	case Path of
 		[<<"powerLog">>] ->
 			{powerLog, 100};
-		[<<"powerLog">>, N] ->
-			{powerLog, string:to_integer(binary_to_list(N))};
+		[<<"powerLog">>, NBin] ->
+			{N, _} = string:to_integer(binary_to_list(NBin)),
+			{powerLog, N};
 		[<<"light">>] ->
 			all;
 		[<<"light">>, IDstr] ->
