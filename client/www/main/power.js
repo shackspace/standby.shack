@@ -11,7 +11,7 @@ dataP3 = [];
 dataSum = [];
 powerdiv = "";
 
-function initPowerChart(inpowerdiv) {
+function initPowerChart(inpowerdiv, numLog) {
 	powerdiv = inpowerdiv;
 
 	energieChart = new CanvasJS.Chart(powerdiv,{
@@ -76,26 +76,28 @@ function initPowerChart(inpowerdiv) {
 		]
 	});
 
-	var time = new Date();
-	time.setTime(time.getTime()-2000*500);
+	var powerLog = JSON.parse(httpGet("/2/powerLog/" + numLog));
 
-	for (var i = 0; i < 500; i++) {
+	var time = new Date();
+	time.setTime(time.getTime()-2000*numLog);
+
+	for (var i = 0; i < numLog; i++) {
 		time.setTime(time.getTime()+2000);
 		dataP1.push({
 			x: time.getTime(),
-			y: 1000
+			y: powerLog.p1[(numLog-1)-i]
 		});
 		dataP2.push({
 			x: time.getTime(),
-			y: 1000
+			y: powerLog.p2[(numLog-1)-i]
 		});
 		dataP3.push({
 			x: time.getTime(),
-			y: 1000
+			y: powerLog.p3[(numLog-1)-i]
 		});
 		dataSum.push({
 			x: time.getTime(),
-			y: 1000
+			y: powerLog.p1[(numLog-1)-i] + powerLog.p2[(numLog-1)-i] + powerLog.p3[(numLog-1)-i]
 		});
 	};
 
