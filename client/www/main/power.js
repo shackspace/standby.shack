@@ -12,6 +12,7 @@ dataSum = [];
 powerdiv = "";
 
 function initPowerChart(inpowerdiv, numLog) {
+	document.getElementById(inpowerdiv).innerHTML="";
 	powerdiv = inpowerdiv;
 
 	energieChart = new CanvasJS.Chart(powerdiv,{
