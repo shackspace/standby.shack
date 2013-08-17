@@ -85,23 +85,23 @@ function initPowerChart(inpowerdiv, numLog) {
 	var time = new Date();
 	time.setTime(time.getTime()-2000*numLog);
 
-	for (var i = 0; i < numLog; i++) {
+	for (var i = 1; i <= numLog; i++) {
 		time.setTime(time.getTime()+2000);
 		dataP1.push({
 			x: time.getTime(),
-			y: powerLog.p1[(numLog-1)-i]
+			y: powerLog.p1[numLog-i]
 		});
 		dataP2.push({
 			x: time.getTime(),
-			y: powerLog.p2[(numLog-1)-i]
+			y: powerLog.p2[numLog-i]
 		});
 		dataP3.push({
 			x: time.getTime(),
-			y: powerLog.p3[(numLog-1)-i]
+			y: powerLog.p3[numLog-i]
 		});
 		dataSum.push({
 			x: time.getTime(),
-			y: powerLog.p1[(numLog-1)-i] + powerLog.p2[(numLog-1)-i] + powerLog.p3[(numLog-1)-i]
+			y: powerLog.p1[numLog-i] + powerLog.p2[numLog-i] + powerLog.p3[numLog-i]
 		});
 	};
 
