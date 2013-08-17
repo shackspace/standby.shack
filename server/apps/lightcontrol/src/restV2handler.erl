@@ -121,6 +121,7 @@ applicationJsonGet(Req, State) ->
 		error ->
 			<<"{\"type\":\"error\",\"error\":\"can't convert url\"}">>;
 		{powerLog, N} ->
+			io:format("log ~p~n", [N]),
 			{_, PowerLog} = jsonHandler:getPowerLog(N),
 			PowerLog;
 		ID ->

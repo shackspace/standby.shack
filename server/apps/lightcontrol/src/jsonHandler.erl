@@ -117,6 +117,9 @@ encodePower(_) ->
 %% @spec getPowerLog(N) -> PowerLogAsJSON | error
 %% @end
 %%--------------------------------------------------------------------
-getPowerLog(N) ->
+getPowerLog(N) when is_integer(N) ->
 	{Time,P1,P2,P3} = database:getPowerLog(N),
-	json:encode({[{type, <<"powerLog">>},{time,Time},{p1,P1},{p2,P2},{p3,P3}]}).
+	json:encode({[{type, <<"powerLog">>},{time,Time},{p1,P1},{p2,P2},{p3,P3}]});
+getPowerLog(_) ->
+	JSON = <<"{\"type\":\"error\",\"error\":\"can't get powerLog\"}">>,
+	{error, JSON}.
