@@ -11,7 +11,7 @@ window.onload = function() {
 	} else {
 		alert("Sorry but your browser doesn't support the EventSource API");
 	}
-	initPowerChart("powermon", document.getElementById('powerLogNum').value);
+	initPowerChart("powermon", 900);//document.getElementById('powerLogNum').value);
 	initLights();
 	lightResize();
 	if(window.location.hash == "#powermon") {
