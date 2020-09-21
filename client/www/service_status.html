@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>shackspace kiosk interface</title>
+	
+</head>
+<body bgcolor="#252525">
+	<table border="0">
+		<tr>
+			<th>
+				<span style="color: #ffffff">Monitoring (selftest) </span>
+			</th>
+			<th>
+				<span id="selftest.status" style="color: #ffff00"> is pending </span>
+			</th>
+			<th>
+				<span id="selftest.timestamp" style="color: #ffffff"></span> 
+			</th>
+			<th>
+				<span id="selftest.additional" style="color: #ffffff"></span> 
+			</th>
+		</tr>
+		<tr>
+			<th>
+				<span style="color: #ffffff">Internet connection </span>
+			</th>
+			<th>
+				<span id="internet.status" style="color: #ffff00"> is pending </span>
+			</th>
+			<th>
+				<span id="internet.timestamp" style="color: #ffffff"></span>
+			</th>
+			<th>
+				<span id="internet.additional" style="color: #ffffff"></span>
+			</th>
+		</tr>
+		<tr>
+			<th>
+				<span style="color: #ffffff">Light (on openhab.shack) </span>
+			</th>
+			<th>
+				<span id="light.status" style="color: #ffff00"> is pending </span>
+			</th>
+			<th>
+				<span id="light.timestamp" style="color: #ffffff"></span> 
+			</th>
+			<th>
+				<span id="light.additional" style="color: #ffffff"></span> 
+			</th>
+		</tr>
+		<tr>
+			<th>
+				<span style="color: #ffffff">Power (on glados.shack) </span>
+			</th>
+			<th>
+				<span id="power.status" style="color: #ffff00"> is pending </span>
+			</th>
+			<th>
+				<span id="power.timestamp" style="color: #ffffff"></span> 
+			</th>
+			<th>
+				<span id="power.additional" style="color: #ffffff"></span> 
+			</th>
+		</tr>
+		<tr>
+			<th>
+				<span style="color: #ffffff">VVS (on kiosk.shack) </span>
+			</th>
+			<th>
+				<span id="vvs.status" style="color: #ffff00"> is pending </span>
+			</th>
+			<th>
+				<span id="vvs.timestamp" style="color: #ffffff"></span> 
+			</th>
+			<th>
+				<span id="vvs.additional" style="color: #ffffff"></span> 
+			</th>
+		</tr>
+		<tr>
+			<th>
+				<span style="color: #ffffff">MPD </span>
+			</th>
+			<th>
+				<span id="mpd.status" style="color: #ffff00"> is pending </span>
+			</th>
+			<th>
+				<span id="mpd.timestamp" style="color: #ffffff"></span> 
+			</th>
+			<th>
+				<span id="mpd.additional" style="color: #ffffff"></span> 
+			</th>
+		</tr>
+		<tr>
+			<th>
+				<span style="color: #ffffff">Ibuprofen (VM-Host) </span>
+			</th>
+			<th>
+				<span id="ibuprofen.status" style="color: #ffff00"> is pending </span>
+			</th>
+			<th>
+				<span id="ibuprofen.timestamp" style="color: #ffffff"></span> 
+			</th>
+			<th>
+				<span id="ibuprofen.additional" style="color: #ffffff"></span> 
+			</th>
+		</tr>
+		<tr>
+			<th>
+				<span style="color: #ffffff">phenylbutazon (VM-Host) </span>
+			</th>
+			<th>
+				<span id="phenylbutazon.status" style="color: #ffff00"> is pending </span>
+			</th>
+			<th>
+				<span id="phenylbutazon.timestamp" style="color: #ffffff"></span> 
+			</th>
+			<th>
+				<span id="phenylbutazon.additional" style="color: #ffffff"></span> 
+			</th>
+		</tr>
+	</table>
+	
+	<script>		
+		var monitoringURL = "http://light.shack:9999";
+		
+		checkSelf();
+		checkLight();
+		checkInternet();
+		checkPower();
+		checkVVS();
+		checkMPD();
+		checkibuprofen();
+		checkphenylbutazon();
+
+		function updateTime(sensor){
+			var now = new Date();
+			document.getElementById(sensor+ ".timestamp").innerHTML = " since " + now.toLocaleString();
+		}
+
+		function checkSelf(){
+			updateTime("selftest");
+			
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", monitoringURL+"/check_internet", true);
+
+			xhr.addEventListener("progress", function(e){
+				console.log(e);
+			}, false);
+
+			// register the event handler
+			xhr.addEventListener('load',function(){
+				if(xhr.status === 200){
+					console.log(xhr.responseText);
+					document.getElementById("selftest.status").innerHTML = " is operational ";
+					document.getElementById("selftest.status").style.color = "#00ff00";
+				}
+				else{
+					document.getElementById("selftest.status").innerHTML = " has an server error ";
+					document.getElementById("selftest.status").style.color = "#ff0000";
+					document.getElementById("selftest.additional").style.color = "#ff0000";
+					document.getElementById("selftest.additional").innerHTML = "Not all tests may work";	
+				}
+				updateTime("selftest");
+				
+			},false);
+
+			xhr.addEventListener('error',function(err){
+				console.log(err)
+				document.getElementById("selftest.status").innerHTML = " has an server error ";
+				document.getElementById("selftest.status").style.color = "#ff0000";
+				document.getElementById("selftest.additional").style.color = "#ff0000";
+				document.getElementById("selftest.additional").innerHTML = "Not all tests may work";
+				updateTime("selftest");
+			},false);
+
+			//Send the request
+			xhr.send();
+		}
+
+		function checkInternet(){
+			updateTime("internet");
+			
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", monitoringURL+"/check_internet", true);
+
+			// register the event handler
+			xhr.addEventListener('load',function(){
+				if(xhr.status === 200){
+					if(xhr.responseText == "{internet: 'up'}"){
+						document.getElementById("internet.status").innerHTML = " has the grooves ";
+						document.getElementById("internet.status").style.color = "#00ff00";
+					}
+					else{
+						document.getElementById("internet.status").innerHTML = " is offline ";
+						document.getElementById("internet.status").style.color = "#ff0000";
+					}
+				}
+				updateTime("internet");
+			},false);
+
+			xhr.addEventListener('error',function(err){
+				console.log(err)
+				document.getElementById("internet.status").innerHTML = " is offline ";
+				document.getElementById("internet.status").style.color = "#ff0000";
+				updateTime("internet");
+			},false);
+
+			//Send the request
+			xhr.send();
+		}
+
+		function checkLight(){
+			updateTime("light");
+
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "http://openhab.shack/lounge/1", true);
+
+			xhr.addEventListener('load',function(){
+				console.log(xhr.responseText);
+				if(xhr.status === 200){
+					if(xhr.responseText != "{}"){
+						lightResponse = JSON.parse(xhr.responseText);
+						document.getElementById("light.status").innerHTML = " is up an provides valid data ";
+						document.getElementById("light.status").style.color = "#00ff00";
+						updateTime("light");
+					}
+					else{
+						document.getElementById("light.status").innerHTML = " returns invalid data ";
+						document.getElementById("light.status").style.color = "#ff0000";
+						updateTime("light");
+					}
+				}
+				updateTime("internet");
+			},false);
+
+			xhr.addEventListener('error',function(err){
+				console.log(err)
+				document.getElementById("light.status").innerHTML = " reports an error ";
+				document.getElementById("light.status").style.color = "#ff0000";
+				document.getElementById("light.additional").style.color = "#ff0000";
+				document.getElementById("light.additional").innerHTML = err;
+				updateTime("light");
+			},false);
+
+			xhr.send();
+		}
+
+		function checkPower(){
+			updateTime("power");
+
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "http://glados.shack/siid/apps/powermeter.py?n=1", true);
+
+			xhr.addEventListener('load',function(){
+				console.log(xhr.responseText);
+				if(xhr.status === 200){
+					if(xhr.responseText != "{}"){
+						powerResponse = JSON.parse(xhr.responseText);
+						document.getElementById("power.status").innerHTML = " is up an provides valid data ";
+						document.getElementById("power.status").style.color = "#00ff00";
+						updateTime("power");
+					}
+					else{
+						document.getElementById("power.status").innerHTML = " returns invalid data ";
+						document.getElementById("power.status").style.color = "#ff0000";
+						updateTime("power");
+					}
+				}
+				updateTime("power");
+			},false);
+
+			xhr.addEventListener('error',function(err){
+				console.log(err)
+				document.getElementById("power.status").innerHTML = " reports an error ";
+				document.getElementById("power.status").style.color = "#ff0000";
+				document.getElementById("power.additional").style.color = "#ff0000";
+				document.getElementById("power.additional").innerHTML = err;
+				updateTime("power");
+			},false);
+
+			xhr.send();
+		}
+
+		function checkVVS(){
+			updateTime("vvs");
+
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "http://kiosk.shack:8081/station/5000082", true);
+
+			xhr.addEventListener('load',function(){
+				console.log(xhr.responseText);
+				if(xhr.status === 200){
+					if(xhr.responseText != "{}"){
+						powerResponse = JSON.parse(xhr.responseText);
+						document.getElementById("vvs.status").innerHTML = " is up an provides valid data ";
+						document.getElementById("vvs.status").style.color = "#00ff00";
+						updateTime("vvs");
+					}
+					else{
+						document.getElementById("vvs.status").innerHTML = " returns invalid data ";
+						document.getElementById("vvs.status").style.color = "#ff0000";
+						updateTime("vvs");
+					}
+				}
+				updateTime("vvs");
+			},false);
+
+			xhr.addEventListener('error',function(err){
+				console.log(err)
+				document.getElementById("vvs.status").innerHTML = " reports an error ";
+				document.getElementById("vvs.status").style.color = "#ff0000";
+				document.getElementById("vvs.additional").style.color = "#ff0000";
+				document.getElementById("vvs.additional").innerHTML = err;
+				updateTime("vvs");
+			},false);
+
+			xhr.send();
+		}
+
+		function checkMPD(){
+			updateTime("mpd");
+			
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", monitoringURL+"/check_mpd", true);
+
+			// register the event handler
+			xhr.addEventListener('load',function(){
+				if(xhr.status === 200){
+					if(xhr.responseText == "{mpd: 'up'}"){
+						document.getElementById("mpd.status").innerHTML = " can be reached ";
+						document.getElementById("mpd.status").style.color = "#00ff00";
+					}
+					else{
+						document.getElementById("mpd.status").innerHTML = " is offline ";
+						document.getElementById("mpd.status").style.color = "#ff0000";
+					}
+				}
+				updateTime("mpd");
+			},false);
+
+			xhr.addEventListener('error',function(err){
+				console.log(err)
+				document.getElementById("mpd.status").innerHTML = " is offline ";
+				document.getElementById("mpd.status").style.color = "#ff0000";
+				updateTime("mpd");
+			},false);
+
+			//Send the request
+			xhr.send();
+		}
+
+		function checkibuprofen(){
+			updateTime("ibuprofen");
+			
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", monitoringURL+"/check_ibuprofen", true);
+
+			// register the event handler
+			xhr.addEventListener('load',function(){
+				if(xhr.status === 200){
+					if(xhr.responseText == "{ibuprofen: 'up'}"){
+						document.getElementById("ibuprofen.status").innerHTML = " can be reached ";
+						document.getElementById("ibuprofen.status").style.color = "#00ff00";
+					}
+					else{
+						document.getElementById("ibuprofen.status").innerHTML = " is offline ";
+						document.getElementById("ibuprofen.status").style.color = "#ff0000";
+					}
+				}
+				updateTime("ibuprofen");
+			},false);
+
+			xhr.addEventListener('error',function(err){
+				console.log(err)
+				document.getElementById("ibuprofen.status").innerHTML = " is offline ";
+				document.getElementById("ibuprofen.status").style.color = "#ff0000";
+				updateTime("ibuprofen");
+			},false);
+
+			//Send the request
+			xhr.send();
+		}
+
+		function checkphenylbutazon(){
+			updateTime("phenylbutazon");
+			
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", monitoringURL+"/check_phenylbutazon", true);
+
+			// register the event handler
+			xhr.addEventListener('load',function(){
+				if(xhr.status === 200){
+					if(xhr.responseText == "{phenylbutazon: 'up'}"){
+						document.getElementById("phenylbutazon.status").innerHTML = " can be reached ";
+						document.getElementById("phenylbutazon.status").style.color = "#00ff00";
+					}
+					else{
+						document.getElementById("phenylbutazon.status").innerHTML = " is offline ";
+						document.getElementById("phenylbutazon.status").style.color = "#ff0000";
+					}
+				}
+				updateTime("phenylbutazon");
+			},false);
+
+			xhr.addEventListener('error',function(err){
+				console.log(err)
+				document.getElementById("phenylbutazon.status").innerHTML = " is offline ";
+				document.getElementById("phenylbutazon.status").style.color = "#ff0000";
+				updateTime("phenylbutazon");
+			},false);
+
+			//Send the request
+			xhr.send();
+		}
+		
+		</script>
+</body>
+</html>
+
